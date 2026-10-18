@@ -1,0 +1,386 @@
+{
+  "versione": 2,
+  "data": "2026-10-18T10:00:00.000",
+  "paziente_attivo": "mario_rossi",
+  "pazienti": {
+    "mario_rossi": {
+      "paziente": {
+        "nome": "Mario",
+        "cognome": "Rossi",
+        "dataNascita": "1978-03-14T00:00:00.000",
+        "gruppaSanguigno": "A+",
+        "codiceFiscale": null,
+        "medico": "Dr. Bianchi",
+        "telefono": null,
+        "email": null,
+        "allergie": [],
+        "patologieCroniche": [
+          "Ipertensione lieve"
+        ],
+        "note": "Dati di esempio (fittizi).",
+        "updatedAt": "2026-04-02T12:00:00.000",
+        "peso": 82.0,
+        "altezza": 178.0,
+        "anamnesi": "Paziente di esempio per la demo dell'app.",
+        "fumo": false,
+        "sigarette_giorno": null,
+        "alcool": true,
+        "bicchieri_giorno": 1,
+        "passi_giorno_manuale": 6500
+      },
+      "esami": [
+        {
+          "id": "demo-e1",
+          "tipo": "Emocromo",
+          "data": "2026-03-10T00:00:00.000",
+          "valori": [
+            {
+              "nome": "Globuli bianchi",
+              "valore": "6.8",
+              "unita": "10^3/µL",
+              "riferimentoMin": "4.0",
+              "riferimentoMax": "10.0",
+              "fuoriRange": false
+            },
+            {
+              "nome": "Globuli rossi",
+              "valore": "4.9",
+              "unita": "10^6/µL",
+              "riferimentoMin": "4.5",
+              "riferimentoMax": "5.9",
+              "fuoriRange": false
+            },
+            {
+              "nome": "Emoglobina",
+              "valore": "14.8",
+              "unita": "g/dL",
+              "riferimentoMin": "13.5",
+              "riferimentoMax": "17.5",
+              "fuoriRange": false
+            },
+            {
+              "nome": "Ematocrito",
+              "valore": "44",
+              "unita": "%",
+              "riferimentoMin": "40",
+              "riferimentoMax": "52",
+              "fuoriRange": false
+            },
+            {
+              "nome": "Piastrine",
+              "valore": "245",
+              "unita": "10^3/µL",
+              "riferimentoMin": "150",
+              "riferimentoMax": "400",
+              "fuoriRange": false
+            }
+          ],
+          "laboratorio": "Laboratorio Demo",
+          "medico": "Dr. Bianchi",
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2026-03-10T12:00:00.000"
+        },
+        {
+          "id": "demo-e2",
+          "tipo": "Profilo lipidico",
+          "data": "2026-03-10T00:00:00.000",
+          "valori": [
+            {
+              "nome": "Colesterolo totale",
+              "valore": "214",
+              "unita": "mg/dL",
+              "riferimentoMin": null,
+              "riferimentoMax": "200",
+              "fuoriRange": true
+            },
+            {
+              "nome": "Colesterolo HDL",
+              "valore": "52",
+              "unita": "mg/dL",
+              "riferimentoMin": "40",
+              "riferimentoMax": null,
+              "fuoriRange": false
+            },
+            {
+              "nome": "Colesterolo LDL",
+              "valore": "142",
+              "unita": "mg/dL",
+              "riferimentoMin": null,
+              "riferimentoMax": "130",
+              "fuoriRange": true
+            },
+            {
+              "nome": "Trigliceridi",
+              "valore": "98",
+              "unita": "mg/dL",
+              "riferimentoMin": null,
+              "riferimentoMax": "150",
+              "fuoriRange": false
+            }
+          ],
+          "laboratorio": "Laboratorio Demo",
+          "medico": "Dr. Bianchi",
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2026-03-10T12:00:00.000"
+        },
+        {
+          "id": "demo-e3",
+          "tipo": "Glicemia",
+          "data": "2026-03-10T00:00:00.000",
+          "valori": [
+            {
+              "nome": "Glicemia",
+              "valore": "96",
+              "unita": "mg/dL",
+              "riferimentoMin": "70",
+              "riferimentoMax": "100",
+              "fuoriRange": false
+            }
+          ],
+          "laboratorio": "Laboratorio Demo",
+          "medico": "Dr. Bianchi",
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2026-03-10T12:00:00.000"
+        },
+        {
+          "id": "demo-e4",
+          "tipo": "Profilo lipidico",
+          "data": "2025-02-20T00:00:00.000",
+          "valori": [
+            {
+              "nome": "Colesterolo totale",
+              "valore": "228",
+              "unita": "mg/dL",
+              "riferimentoMin": null,
+              "riferimentoMax": "200",
+              "fuoriRange": true
+            },
+            {
+              "nome": "Colesterolo HDL",
+              "valore": "50",
+              "unita": "mg/dL",
+              "riferimentoMin": "40",
+              "riferimentoMax": null,
+              "fuoriRange": false
+            },
+            {
+              "nome": "Colesterolo LDL",
+              "valore": "155",
+              "unita": "mg/dL",
+              "riferimentoMin": null,
+              "riferimentoMax": "130",
+              "fuoriRange": true
+            },
+            {
+              "nome": "Trigliceridi",
+              "valore": "110",
+              "unita": "mg/dL",
+              "riferimentoMin": null,
+              "riferimentoMax": "150",
+              "fuoriRange": false
+            }
+          ],
+          "laboratorio": "Laboratorio Demo",
+          "medico": "Dr. Bianchi",
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2025-02-20T12:00:00.000"
+        },
+        {
+          "id": "demo-e5",
+          "tipo": "Glicemia",
+          "data": "2025-02-20T00:00:00.000",
+          "valori": [
+            {
+              "nome": "Glicemia",
+              "valore": "101",
+              "unita": "mg/dL",
+              "riferimentoMin": "70",
+              "riferimentoMax": "100",
+              "fuoriRange": true
+            }
+          ],
+          "laboratorio": "Laboratorio Demo",
+          "medico": "Dr. Bianchi",
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2025-02-20T12:00:00.000"
+        }
+      ],
+      "visite": [
+        {
+          "id": "demo-v1",
+          "specialita": "Cardiologia",
+          "data": "2026-04-02T00:00:00.000",
+          "medico": "Dr. Verdi",
+          "struttura": "Ospedale Demo",
+          "diagnosi": "Ipertensione lieve. Controllo tra 12 mesi.",
+          "terapia": "Ramipril 5 mg al mattino",
+          "farmaciPrescritti": [
+            "Ramipril 5 mg"
+          ],
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2026-04-02T12:00:00.000"
+        },
+        {
+          "id": "demo-v2",
+          "specialita": "Dermatologia",
+          "data": "2025-05-15T00:00:00.000",
+          "medico": "Dr.ssa Neri",
+          "struttura": "Studio Demo",
+          "diagnosi": "Controllo nevi: nessuna alterazione.",
+          "terapia": null,
+          "farmaciPrescritti": [],
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2025-05-15T12:00:00.000"
+        }
+      ],
+      "farmaci": [
+        {
+          "id": "demo-f1",
+          "nome": "Ramipril",
+          "principioAttivo": "Ramipril",
+          "dosaggio": "5 mg",
+          "frequenza": "1 volta al giorno",
+          "dataInizio": "2026-04-02T00:00:00.000",
+          "dataFine": null,
+          "attivo": true,
+          "medico": "Dr. Verdi",
+          "note": null,
+          "orariAssunzione": [
+            "08:00"
+          ],
+          "updatedAt": "2026-04-02T12:00:00.000"
+        }
+      ],
+      "appuntamenti": [
+        {
+          "id": "demo-a1",
+          "titolo": "Esami del sangue",
+          "data": "2025-02-20T00:00:00.000",
+          "ora": "08:00",
+          "tipo": "esame",
+          "medico": "Dr. Bianchi",
+          "struttura": "Laboratorio Demo",
+          "indirizzo": null,
+          "note": null,
+          "completato": true,
+          "promemoria": true,
+          "updatedAt": "2025-02-20T12:00:00.000",
+          "costo": 38.5
+        },
+        {
+          "id": "demo-a2",
+          "titolo": "Visita dermatologica",
+          "data": "2025-05-15T00:00:00.000",
+          "ora": "16:30",
+          "tipo": "visita",
+          "medico": "Dr.ssa Neri",
+          "struttura": "Studio Demo",
+          "indirizzo": null,
+          "note": null,
+          "completato": true,
+          "promemoria": true,
+          "updatedAt": "2025-05-15T12:00:00.000",
+          "costo": 120.0
+        },
+        {
+          "id": "demo-a3",
+          "titolo": "Ecografia addome",
+          "data": "2025-11-08T00:00:00.000",
+          "ora": "10:15",
+          "tipo": "esame",
+          "medico": "Dr. Gialli",
+          "struttura": "Centro Diagnostico Demo",
+          "indirizzo": null,
+          "note": null,
+          "completato": true,
+          "promemoria": true,
+          "updatedAt": "2025-11-08T12:00:00.000",
+          "costo": 95.0
+        },
+        {
+          "id": "demo-a4",
+          "titolo": "Esami del sangue",
+          "data": "2026-03-10T00:00:00.000",
+          "ora": "08:00",
+          "tipo": "esame",
+          "medico": "Dr. Bianchi",
+          "struttura": "Laboratorio Demo",
+          "indirizzo": null,
+          "note": null,
+          "completato": true,
+          "promemoria": true,
+          "updatedAt": "2026-03-10T12:00:00.000",
+          "costo": 42.0
+        },
+        {
+          "id": "demo-a5",
+          "titolo": "Visita cardiologica",
+          "data": "2026-04-02T00:00:00.000",
+          "ora": "09:30",
+          "tipo": "visita",
+          "medico": "Dr. Verdi",
+          "struttura": "Ospedale Demo",
+          "indirizzo": null,
+          "note": null,
+          "completato": true,
+          "promemoria": true,
+          "updatedAt": "2026-04-02T12:00:00.000",
+          "costo": 150.0
+        },
+        {
+          "id": "demo-a6",
+          "titolo": "Elettrocardiogramma",
+          "data": "2026-04-02T00:00:00.000",
+          "ora": "10:00",
+          "tipo": "esame",
+          "medico": "Dr. Verdi",
+          "struttura": "Ospedale Demo",
+          "indirizzo": null,
+          "note": null,
+          "completato": true,
+          "promemoria": true,
+          "updatedAt": "2026-04-02T12:00:00.000",
+          "costo": 60.0
+        },
+        {
+          "id": "demo-a7",
+          "titolo": "Controllo colesterolo",
+          "data": "2026-11-20T00:00:00.000",
+          "ora": "08:30",
+          "tipo": "esame",
+          "medico": "Dr. Bianchi",
+          "struttura": "Laboratorio Demo",
+          "indirizzo": null,
+          "note": null,
+          "completato": false,
+          "promemoria": true,
+          "updatedAt": "2026-11-20T12:00:00.000",
+          "costo": null
+        },
+        {
+          "id": "demo-a8",
+          "titolo": "Visita oculistica",
+          "data": "2026-12-05T00:00:00.000",
+          "ora": "15:00",
+          "tipo": "visita",
+          "medico": "Dr. Blu",
+          "struttura": "Studio Demo",
+          "indirizzo": null,
+          "note": null,
+          "completato": false,
+          "promemoria": true,
+          "updatedAt": "2026-12-05T12:00:00.000",
+          "costo": null
+        }
+      ],
+      "exportedAt": "2026-10-18T10:00:00.000"
+    }
+  }
+}

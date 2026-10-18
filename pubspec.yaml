@@ -1,0 +1,93 @@
+name: salute_bettin
+description: Health Monitor - Il tuo monitor della salute personale
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.2.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # --- State management ---
+  flutter_riverpod: ^2.5.1
+
+  # --- Navigazione ---
+  go_router: ^13.2.0
+
+  # --- Storage locale ---
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  permission_handler: ^11.3.1
+
+  # --- Google ---
+  google_sign_in: ^6.2.1
+  googleapis: ^13.2.0
+  googleapis_auth: ^1.6.0
+
+  # --- Rete ---
+  http: ^1.2.1
+  connectivity_plus: ^6.0.3
+
+  # --- Auth biometrica ---
+  local_auth: ^2.2.0
+
+  # --- Preferenze locali ---
+  shared_preferences: ^2.2.3
+
+  # --- File e media ---
+  #file_picker: ^9.1.0
+  image_picker: ^1.1.2
+  path_provider: ^2.1.3
+  path: ^1.9.0
+  fl_chart: ^0.68.0
+  open_file: ^3.3.2
+  health: 13.3.1
+
+  # --- Utilità ---
+  intl: ^0.20.0
+  uuid: ^4.4.0
+  equatable: ^2.0.5
+  json_annotation: ^4.9.0
+  collection: ^1.18.0
+  crypto: ^3.0.3
+
+  # --- UI ---
+  flutter_svg: ^2.0.10+1
+  cached_network_image: ^3.3.1
+  shimmer: ^3.0.0
+  gap: ^3.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # --- Generatori di codice ---
+  build_runner: ^2.4.9
+  hive_generator: ^2.0.1
+  json_serializable: ^6.8.0
+
+  # --- Linting ---
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
+
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700

@@ -1,0 +1,51 @@
+# ─── Segreti e file locali: NON devono mai finire su GitHub ───
+lib/core/constants.dart
+**/android/app/google-services.json
+**/android/key.properties
+**/ios/Runner/GoogleService-Info.plist
+*.jks
+*.keystore
+**/android/app/keystore/
+api_key*
+errori.txt
+*.apk
+health_monitor_backup*.json
+
+# ─── Cartelle di lavoro locali ────────────────────────────────
+outputs/
+android/build/
+
+# ─── Flutter / Dart ───────────────────────────────────────────
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+**/doc/api/
+**/ios/Flutter/.last_build_id
+migrate_working_dir/
+app.*.symbols
+app.*.map.json
+coverage/
+lib/generated_plugin_registrant.dart
+
+# ─── Editor e sistema ─────────────────────────────────────────
+.DS_Store
+**/.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+
+# ─── Dati e log ───────────────────────────────────────────────
+*.hive
+*.log
+*.zip
+
+deploy.ps1
