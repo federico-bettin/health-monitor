@@ -209,29 +209,52 @@ class HealthService {
     HealthDataType.ACTIVE_ENERGY_BURNED,
   ];
 
-  // Tipi opzionali — try/catch individuale
+  // Tipi opzionali supportati da Health Connect (SLEEP_LIGHT e BODY_MASS_INDEX
+  // NON sono supportati: se inclusi nella richiesta, il dialogo permessi non si apre)
   static const _tipiOpzionali = [
     HealthDataType.BODY_WATER_MASS,
-    HealthDataType.BODY_MASS_INDEX,
-    HealthDataType.SLEEP_LIGHT,   // opzionale: totale = DEEP + REM + LIGHT se disponibile
-    HealthDataType.BLOOD_OXYGEN,  // SpO2 — Zepp potrebbe non scriverlo
+    HealthDataType.BLOOD_OXYGEN,
   ];
 
-  Future<List<HealthDataType>> _tipiDisponibili() async {
-    final tutti = [..._tipiBase];
-    for (final tipo in _tipiOpzionali) {
-      try {
-        await _health.hasPermissions([tipo]);
-        tutti.add(tipo);
-      } catch (_) {}
+  static bool _configurato = false;
+
+  /// health >= 11 richiede configure() prima di qualsiasi chiamata.
+  Future<void> _configura() async {
+    if (_configurato) return;
+    await _health.configure();
+    _configurato = true;
+  }
+
+  /// Legge più tipi insieme; se la lettura cumulativa fallisce (es. un solo
+  /// permesso mancante), ripiega su una lettura per tipo, ignorando i tipi
+  /// non leggibili. Così un permesso negato non azzera tutti i dati.
+  Future<List<HealthDataPoint>> _leggiSicuro(
+      List<HealthDataType> tipi, DateTime from, DateTime to) async {
+    try {
+      return await _health.getHealthDataFromTypes(
+          types: tipi, startTime: from, endTime: to);
+    } catch (_) {
+      final out = <HealthDataPoint>[];
+      for (final t in tipi) {
+        try {
+          out.addAll(await _health.getHealthDataFromTypes(
+              types: [t], startTime: from, endTime: to));
+        } catch (_) {}
+      }
+      return out;
     }
-    return tutti;
+  }
+
+  Future<List<HealthDataType>> _tipiDisponibili() async {
+    await _configura();
+    return [..._tipiBase, ..._tipiOpzionali];
   }
 
   // ─── Permessi ────────────────────────────────────────────────
 
   Future<bool> richiediPermessi() async {
     try {
+      await _configura();
       final tipi = await _tipiDisponibili();
       return await _health.requestAuthorization(tipi);
     } catch (e) {
@@ -241,6 +264,13 @@ class HealthService {
 
   Future<WearablePermessiResult> richiediPermessiDettaglio() async {
     try {
+      await _configura();
+      final stato = await _health.getHealthConnectSdkStatus();
+      if (stato != HealthConnectSdkStatus.sdkAvailable) {
+        try { await _health.installHealthConnect(); } catch (_) {}
+        return WearablePermessiResult(
+            ok: false, errore: 'Health Connect non disponibile ($stato)');
+      }
       final tipi = await _tipiDisponibili();
       final ok = await _health.requestAuthorization(tipi);
       return WearablePermessiResult(ok: ok);
@@ -252,6 +282,7 @@ class HealthService {
   Future<bool> hasPermessi() async {
     try {
       // Samsung può restituire null → trattare null come true (tentare comunque)
+      await _configura();
       return await _health.hasPermissions(_tipiBase) ?? true;
     } catch (e) {
       return true;
@@ -265,16 +296,14 @@ class HealthService {
     String? stepSource,
   }) async {
     try {
-      final sorgente = stepSource ?? defaultStepSource;
+      final sorgente = await _sorgenteEffettiva(stepSource);
       final now = DateTime.now();
       final from = now.subtract(Duration(days: giorni));
       final from7 = now.subtract(const Duration(days: 7));
       final mezzanotte = DateTime(now.year, now.month, now.day);
       final tipi = await _tipiDisponibili();
 
-      final dati = await _health.getHealthDataFromTypes(
-        types: tipi, startTime: from, endTime: now,
-      );
+      final dati = await _leggiSicuro(tipi, from, now);
 
       // Bilancia
       final peso           = _ultimoValore(dati, HealthDataType.WEIGHT);
@@ -390,15 +419,13 @@ class HealthService {
     String? stepSource,
   }) async {
     try {
-      final sorgente = stepSource ?? defaultStepSource;
+      final sorgente = await _sorgenteEffettiva(stepSource);
       final now  = DateTime.now();
       final from = now.subtract(Duration(days: giorni));
       final tipi = await _tipiDisponibili();
 
       // UNA SOLA query per tutto
-      final dati = await _health.getHealthDataFromTypes(
-        types: tipi, startTime: from, endTime: now,
-      );
+      final dati = await _leggiSicuro(tipi, from, now);
 
       // Passi oggi — query separata e isolata (evita contaminazione)
       final passiOggiVal = await leggiPassiOggi(stepSource: sorgente);
@@ -444,7 +471,7 @@ class HealthService {
 
   Future<int?> leggiPassiOggi({String? stepSource}) async {
     try {
-      final sorgente   = stepSource ?? defaultStepSource;
+      final sorgente   = await _sorgenteEffettiva(stepSource);
       final now        = DateTime.now();
       final mezzanotte = DateTime(now.year, now.month, now.day);
 
@@ -486,7 +513,7 @@ class HealthService {
 
   Future<WearableData> leggiDatiRecenti({String? stepSource}) async {
     try {
-      final sorgente = stepSource ?? defaultStepSource;
+      final sorgente = await _sorgenteEffettiva(stepSource);
       final now      = DateTime.now();
       final ieri     = now.subtract(const Duration(hours: 36));
       final giorni30 = now.subtract(const Duration(days: 30));
@@ -500,16 +527,13 @@ class HealthService {
         HealthDataType.BODY_MASS_INDEX,
       ];
 
-      final datiBilancia = await _health.getHealthDataFromTypes(
-        types: tipiBilancia.where((t) => tipi.contains(t)).toList(),
-        startTime: giorni30, endTime: now,
-      );
+      final datiBilancia = await _leggiSicuro(
+        tipiBilancia.where((t) => tipi.contains(t)).toList(), giorni30, now);
 
       final tipiRing = tipi.where((t) => !tipiBilancia.contains(t) &&
           t != HealthDataType.STEPS).toList();
       final datiRing = tipiRing.isNotEmpty
-          ? await _health.getHealthDataFromTypes(
-              types: tipiRing, startTime: ieri, endTime: now)
+          ? await _leggiSicuro(tipiRing, ieri, now)
           : <HealthDataPoint>[];
 
       final datiTutti = [...datiBilancia, ...datiRing];
@@ -568,7 +592,7 @@ class HealthService {
 
   Future<List<WearablePoint>> leggiPassi24h({String? stepSource}) async {
     try {
-      final sorgente   = stepSource ?? defaultStepSource;
+      final sorgente   = await _sorgenteEffettiva(stepSource);
       final now        = DateTime.now();
       final mezzanotte = DateTime(now.year, now.month, now.day);
 
@@ -601,7 +625,7 @@ class HealthService {
 
   Future<List<WearablePoint>> leggiPassi30gg({String? stepSource}) async {
     try {
-      final sorgente = stepSource ?? defaultStepSource;
+      final sorgente = await _sorgenteEffettiva(stepSource);
       final now  = DateTime.now();
       final from = now.subtract(const Duration(days: 30));
 
@@ -654,9 +678,7 @@ class HealthService {
         final now  = DateTime.now();
         final from = now.subtract(const Duration(days: 30));
         final tipi = await _tipiDisponibili();
-        final dati = await _health.getHealthDataFromTypes(
-          types: tipi, startTime: from, endTime: now,
-        );
+        final dati = await _leggiSicuro(tipi, from, now);
         return _buildSerieSonnoGiornaliero(dati, from, now);
       } catch (_) {
         return [];
@@ -710,9 +732,7 @@ class HealthService {
       final from = now.subtract(const Duration(days: 7));
       final tipi = await _tipiDisponibili();
 
-      final dati = await _health.getHealthDataFromTypes(
-        types: tipi, startTime: from, endTime: now,
-      );
+      final dati = await _leggiSicuro(tipi, from, now);
 
       final perTipo    = <String, int>{};
       final ultimoVal  = <String, String>{};
@@ -875,6 +895,66 @@ class HealthService {
   // sorgente: sourceId esatto da usare. null = com.huami.watch.hmwatchmanager
 
   static const defaultStepSource = 'com.huami.watch.hmwatchmanager';
+
+  // ─── Sorgente passi automatica ───────────────────────────────
+  // Se l'utente non ha scelto una sorgente, ne sceglie UNA sola (mai somme
+  // tra sorgenti diverse, che raddoppierebbero i passi):
+  //  1. l'anello Zepp/Amazfit, se presente
+  //  2. altrimenti la sorgente con più passi negli ultimi 7 giorni
+  //     (Google Fit, Samsung Health, contapassi del telefono, ecc.)
+  static String? _cacheSorgente;
+  static DateTime? _cacheSorgenteQuando;
+
+  static Set<String> _sorgentiPassi = {};
+
+  /// La sorgente scelta dall'utente (o quella di default) vale solo se ha
+  /// davvero passi negli ultimi 7 giorni; altrimenti si usa quella rilevata
+  /// automaticamente (es. Samsung Health / telefono invece di Zepp).
+  Future<String> _sorgenteEffettiva(String? scelta) async {
+    final auto = await _sorgentePassiAuto();
+    if (scelta != null && _sorgentiPassi.contains(scelta)) return scelta;
+    return auto;
+  }
+
+  Future<String> _sorgentePassiAuto() async {
+    final ora = DateTime.now();
+    if (_cacheSorgente != null &&
+        _cacheSorgenteQuando != null &&
+        ora.difference(_cacheSorgenteQuando!).inMinutes < 5) {
+      return _cacheSorgente!;
+    }
+    var scelta = defaultStepSource;
+    _sorgentiPassi = {};
+    try {
+      final dati = await _health.getHealthDataFromTypes(
+        types: [HealthDataType.STEPS],
+        startTime: ora.subtract(const Duration(days: 7)),
+        endTime: ora,
+      );
+      final totali = <String, double>{};
+      final zepp = <String>{};
+      for (final d in dati) {
+        final v = d.value;
+        if (v is! NumericHealthValue) continue;
+        final id = d.sourceId.isNotEmpty ? d.sourceId : d.sourceName;
+        totali[id] = (totali[id] ?? 0) + v.numericValue.toDouble();
+        final t = '${d.sourceId} ${d.sourceName}'.toLowerCase();
+        if (t.contains('huami') || t.contains('zepp') || t.contains('amazfit')) {
+          zepp.add(id);
+        }
+      }
+      _sorgentiPassi = totali.keys.toSet();
+      if (totali.isNotEmpty) {
+        final candidati = zepp.isNotEmpty
+            ? totali.entries.where((e) => zepp.contains(e.key))
+            : totali.entries;
+        scelta = candidati.reduce((a, b) => a.value >= b.value ? a : b).key;
+      }
+    } catch (_) {}
+    _cacheSorgente = scelta;
+    _cacheSorgenteQuando = ora;
+    return scelta;
+  }
 
   List<HealthDataPoint> _filtraPassi(
       List<HealthDataPoint> dati, String sorgente) {

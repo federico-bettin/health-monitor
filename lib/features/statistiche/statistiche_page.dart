@@ -58,14 +58,22 @@ class StatistichePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(statisticheProvider);
-    return Scaffold(
-      appBar: AppBar(title: const Text('Statistiche per anno')),
-      body: async.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Errore: $e')),
-        data: (anni) {
-          if (anni.isEmpty) {
-            return const Center(
+    const titolo = Text('Statistiche visite ed esami');
+
+    return async.when(
+      loading: () => const Scaffold(
+        appBar: _SempliceAppBar(),
+        body: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Scaffold(
+        appBar: const _SempliceAppBar(),
+        body: Center(child: Text('Errore: $e')),
+      ),
+      data: (anni) {
+        if (anni.isEmpty) {
+          return const Scaffold(
+            appBar: _SempliceAppBar(),
+            body: Center(
               child: Padding(
                 padding: EdgeInsets.all(32),
                 child: Text(
@@ -75,21 +83,52 @@ class StatistichePage extends ConsumerWidget {
                   textAlign: TextAlign.center,
                 ),
               ),
-            );
-          }
-          return RefreshIndicator(
-            onRefresh: () async => ref.refresh(statisticheProvider.future),
-            child: ListView.builder(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(16),
-              itemCount: anni.length,
-              itemBuilder: (_, i) => _AnnoCard(s: anni[i]),
             ),
           );
-        },
-      ),
+        }
+        // Un tab per ogni anno (il più recente per primo).
+        // La key forza il ricalcolo dei tab se cambia l'elenco degli anni.
+        return DefaultTabController(
+          key: ValueKey(anni.map((a) => a.anno).join(',')),
+          length: anni.length,
+          child: Scaffold(
+            appBar: AppBar(
+              title: titolo,
+              bottom: TabBar(
+                isScrollable: anni.length > 4,
+                tabs: [for (final a in anni) Tab(text: '${a.anno}')],
+              ),
+            ),
+            body: TabBarView(
+              children: [
+                for (final a in anni)
+                  RefreshIndicator(
+                    onRefresh: () async =>
+                        ref.refresh(statisticheProvider.future),
+                    child: ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(16),
+                      children: [_AnnoCard(s: a)],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
+}
+
+class _SempliceAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const _SempliceAppBar();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  Widget build(BuildContext context) =>
+      AppBar(title: const Text('Statistiche visite ed esami'));
 }
 
 class _AnnoCard extends StatelessWidget {
@@ -106,8 +145,6 @@ class _AnnoCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('${s.anno}', style: t.titleLarge),
-            const SizedBox(height: 8),
             Row(children: [
               const Expanded(child: SizedBox()),
               Text('N°', style: t.bodySmall),

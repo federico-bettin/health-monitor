@@ -113,7 +113,7 @@ final saluteAnalysisProvider =
       'bicchieri_vino_giorno':
           (paziente?.alcool ?? false) ? paziente?.bicchieriGiorno : null,
       'passi_giorno': passiGiorno,
-      'fonte_passi': wearable?.passiMedi != null ? 'ring' : 'manuale',
+      'fonte_passi': wearable?.passiMedi != null ? 'wearable' : 'manuale',
     },
     // ── Sonno da wearable ──────────────────────────────────
     if (wearable != null && wearable.sonnoOre != null)
@@ -177,6 +177,46 @@ final wearableProvider = FutureProvider<WearableData>((ref) async {
     return const WearableData();
   }
 });
+
+Future<void> _mostraDiagnostica(BuildContext context) async {
+  final diag = await HealthService().diagnostica();
+  if (!context.mounted) return;
+  await showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: const Text('Diagnostica Health Connect (ultimi 7 giorni)'),
+      content: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Lettura: ${diag.ok ? "✅ OK" : "❌ ${diag.errore}"}'),
+            Text('Record totali: ${diag.totaleRecord}'),
+            if (diag.perTipo.isEmpty)
+              const Padding(
+                padding: EdgeInsets.only(top: 8),
+                child: Text(
+                    'Nessun dato: Zepp/Samsung Health/Fit non stanno scrivendo su Health Connect, '
+                    'oppure mancano permessi per alcuni tipi.'),
+              )
+            else ...[
+              const SizedBox(height: 8),
+              const Text('Record per tipo:',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              ...diag.perTipo.entries.map((e) =>
+                  Text('  ${e.key}: ${e.value}'
+                      '${diag.ultimoValPerTipo[e.key] != null ? " (ultimo ${diag.ultimoValPerTipo[e.key]})" : ""}')),
+            ],
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+            onPressed: () => Navigator.pop(ctx), child: const Text('Chiudi')),
+      ],
+    ),
+  );
+}
 
 // ─── Provider wearable config ─────────────────────────────────
 final wearableConfigProvider =
@@ -277,7 +317,7 @@ class DashboardPage extends ConsumerWidget {
         'bicchieri_vino_giorno':
             (paziente?.alcool ?? false) ? paziente?.bicchieriGiorno : null,
         'passi_giorno': passiGiorno,
-        'fonte_passi': wearable?.passiMedi != null ? 'ring' : 'manuale',
+        'fonte_passi': wearable?.passiMedi != null ? 'wearable' : 'manuale',
       },
       // ── Sonno da wearable ────────────────────────────────
       if (wearable != null && wearable.sonnoOre != null)
@@ -445,14 +485,11 @@ class DashboardPage extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
 
-            // Sezione Wearable — visibile solo se almeno un dispositivo configurato
+            // Sezione Wearable — dati da Health Connect (qualsiasi app) oppure card "Connetti"
             configAsync.when(
               loading: () => const SizedBox.shrink(),
               error: (_, __) => const SizedBox.shrink(),
               data: (config) {
-                if (!config.bilancia && !config.ring) {
-                  return const SizedBox.shrink();
-                }
                 return wearableAsync.when(
                   loading: () => const SizedBox.shrink(),
                   error: (_, __) => const SizedBox.shrink(),
@@ -460,54 +497,25 @@ class DashboardPage extends ConsumerWidget {
                       ? _WearableSection(data: w)
                       : _WearableConnect(
                           onConnetti: () async {
-                            ref.invalidate(wearableProvider);
-                            await Future.delayed(const Duration(seconds: 2));
-                            final nuovi = ref.read(wearableProvider).valueOrNull;
-                            if (nuovi != null && nuovi.hasDati) return;
-                            final ok = await HealthService().richiediPermessi();
+                            final res = await HealthService()
+                                .richiediPermessiDettaglio();
+                            final ok = res.ok;
                             ref.invalidate(wearableProvider);
                             if (!context.mounted) return;
+                            if (ok) {
+                              // permessi ok ma nessun dato: mostra cosa vede Health Connect
+                              await _mostraDiagnostica(context);
+                              return;
+                            }
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text(ok
-                                  ? '✅ Connesso! Attendi il caricamento...'
-                                  : '⚠️ Permessi non concessi o nessun dato in Health Connect.'
-                                      'Verifica che Zepp abbia sincronizzato con Health Connect.'),
+                                  ? '✅ Permessi concessi. Se non compaiono dati, controlla che l\'app sincronizzi con Health Connect.'
+                                  : '⚠️ Permessi non concessi${res.errore.isNotEmpty ? ' (${res.errore})' : ''}. '
+                                      'Verifica che l\'app (Zepp, Google Fit, Samsung Health...) sincronizzi con Health Connect.'),
                               duration: const Duration(seconds: 5),
                             ));
                           },
-                          onDiagnostica: () async {
-                            final diag = await HealthService().diagnostica();
-                            if (!context.mounted) return;
-                            showDialog(
-                              context: context,
-                              builder: (_) => AlertDialog(
-                                title: const Text('Diagnostica Wearable'),
-                                content: SingleChildScrollView(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text('Permessi: ${diag.ok ? "✅ OK" : "❌ ${diag.errore}"}'),
-                                      Text('Dati presenti: ${diag.haDati ? "✅ Sì" : "❌ No"}'),
-                                      Text('Record totali: ${diag.totaleRecord}'),
-                                      if (diag.perTipo.isNotEmpty) ...[
-                                        const SizedBox(height: 8),
-                                        const Text('Record per tipo:',
-                                            style: TextStyle(fontWeight: FontWeight.bold)),
-                                        ...diag.perTipo.entries
-                                            .map((e) => Text('  ${e.key}: ${e.value}')),
-                                      ],
-                                    ],
-                                  ),
-                                ),
-                                actions: [
-                                  TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: const Text('Chiudi')),
-                                ],
-                              ),
-                            );
-                          },
+                          onDiagnostica: () => _mostraDiagnostica(context),
                         ),
                 );
               },
@@ -679,9 +687,9 @@ class _WearableConnect extends StatelessWidget {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                  Text('Connetti Wearable',
+                  Text('Connetti Health Connect',
                       style: TextStyle(fontWeight: FontWeight.w600)),
-                  Text('Leggi dati da bilancia e ring via Health Connect',
+                  Text('Passi, peso e altri dati da Google Fit, bilancia, anello e altre app via Health Connect',
                       style: TextStyle(
                           fontSize: 12, color: AppTheme.textSecondaryDark)),
                 ])),
