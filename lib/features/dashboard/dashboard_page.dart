@@ -17,6 +17,7 @@ import 'package:salute_bettin/data/services/claude_service.dart';
 import 'package:salute_bettin/data/services/health_service.dart';
 import 'package:salute_bettin/data/services/settings_service.dart';
 import 'package:salute_bettin/features/import_documento/import_documento_page.dart';
+import 'package:salute_bettin/features/statistiche/statistiche_page.dart';
 
 String _hashDati(Map<String, dynamic> dati) {
   final str = jsonEncode(dati);
@@ -393,6 +394,14 @@ class DashboardPage extends ConsumerWidget {
               icon: const Icon(Icons.refresh),
               tooltip: 'Ricalcola score',
               onPressed: () => _ricalcolaScore(context, ref),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.bar_chart),
+            tooltip: 'Statistiche visite ed esami',
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const StatistichePage()),
             ),
           ),
           IconButton(

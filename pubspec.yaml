@@ -47,6 +47,10 @@ dependencies:
   open_file: ^3.3.2
   health: 13.3.1
 
+  # --- Notifiche promemoria ---
+  flutter_local_notifications: ^19.0.0
+  timezone: ^0.10.0
+
   # --- Utilità ---
   intl: ^0.20.0
   uuid: ^4.4.0

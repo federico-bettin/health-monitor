@@ -4,7 +4,8 @@ import 'package:salute_bettin/core/theme.dart';
 import 'package:salute_bettin/data/models/appuntamento.dart';
 import 'package:salute_bettin/data/repositories/local_repository.dart';
 import 'appuntamento_form_page.dart';
-import '../statistiche/statistiche_page.dart';
+import 'package:salute_bettin/core/format.dart';
+import 'package:salute_bettin/data/services/notification_service.dart';
 
 final appuntamentiProvider = FutureProvider<List<Appuntamento>>((ref) async {
   final repo = LocalRepository();
@@ -34,19 +35,7 @@ class _CalendarioPageState extends ConsumerState<CalendarioPage> {
     final appuntamentiAsync = ref.watch(appuntamentiProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Calendario'),
-        actions: [
-          IconButton(
-            tooltip: 'Statistiche per anno',
-            icon: const Icon(Icons.bar_chart),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const StatistichePage()),
-            ),
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('Calendario')),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await Navigator.push(
@@ -102,61 +91,6 @@ class _CalendarioPageState extends ConsumerState<CalendarioPage> {
     );
   }
 
-  /// Segna come effettuato chiedendo il costo (opzionale), oppure annulla.
-  Future<void> _toggleEffettuato(Appuntamento a) async {
-    final repo = LocalRepository();
-  await repo.init();
-    if (a.completato) {
-      a.completato = false;
-      a.updatedAt = DateTime.now();
-      await repo.saveAppuntamento(a);
-      ref.invalidate(appuntamentiProvider);
-      return;
-    }
-    final ctrl = TextEditingController(
-        text: a.costo == null ? '' : a.costo!.toStringAsFixed(2));
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Segna come effettuato'),
-        content: TextField(
-          controller: ctrl,
-          autofocus: true,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: const InputDecoration(
-            labelText: 'Costo (CHF)',
-            hintText: 'Lascia vuoto se non noto',
-            prefixIcon: Icon(Icons.payments_outlined),
-          ),
-        ),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Annulla')),
-          TextButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Conferma')),
-        ],
-      ),
-    );
-    final testo = ctrl.text.trim().replaceAll(',', '.');
-    ctrl.dispose();
-    if (ok != true) return;
-    final costo = testo.isEmpty ? null : double.tryParse(testo);
-    if (testo.isNotEmpty && (costo == null || costo < 0)) {
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('Importo non valido')));
-      }
-      return;
-    }
-    a.completato = true;
-    a.costo = costo;
-    a.updatedAt = DateTime.now();
-    await repo.saveAppuntamento(a);
-    ref.invalidate(appuntamentiProvider);
-  }
-
   Widget _buildLista(BuildContext context, List<Appuntamento> appuntamenti,
       List<Appuntamento> tutti) {
     if (appuntamenti.isEmpty) {
@@ -191,11 +125,11 @@ class _CalendarioPageState extends ConsumerState<CalendarioPage> {
             );
             ref.invalidate(appuntamentiProvider);
           },
-          onToggleEffettuato: () => _toggleEffettuato(a),
           onDelete: () async {
             final repo = LocalRepository();
   await repo.init();
             await repo.deleteAppuntamento(a.id);
+            await NotificationService.instance.annulla(a.id);
             ref.invalidate(appuntamentiProvider);
           },
         );
@@ -208,13 +142,11 @@ class _AppuntamentoCard extends StatelessWidget {
   final Appuntamento appuntamento;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
-  final VoidCallback onToggleEffettuato;
 
   const _AppuntamentoCard({
     required this.appuntamento,
     required this.onEdit,
     required this.onDelete,
-    required this.onToggleEffettuato,
   });
 
   Color get _colore => switch (appuntamento.tipo) {
@@ -249,7 +181,7 @@ class _AppuntamentoCard extends StatelessWidget {
           '${appuntamento.data.day}/${appuntamento.data.month}/${appuntamento.data.year}'
           '${appuntamento.ora != null ? ' · ${appuntamento.ora}' : ''}'
           '${appuntamento.struttura != null ? '\n${appuntamento.struttura}' : ''}'
-          '${appuntamento.costo != null ? '\nCHF ${appuntamento.costo!.toStringAsFixed(2)}' : ''}',
+          '${appuntamento.costo != null ? '\n${formatEuro(appuntamento.costo!)}' : ''}',
           style: Theme.of(context).textTheme.bodySmall,
         ),
         isThreeLine:
@@ -257,19 +189,6 @@ class _AppuntamentoCard extends StatelessWidget {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            IconButton(
-                tooltip: appuntamento.completato
-                    ? 'Effettuato (tocca per annullare)'
-                    : 'Segna come effettuato',
-                icon: Icon(
-                    appuntamento.completato
-                        ? Icons.check_circle
-                        : Icons.check_circle_outline,
-                    size: 20,
-                    color: appuntamento.completato
-                        ? const Color(0xFF00E5A0)
-                        : null),
-                onPressed: onToggleEffettuato),
             IconButton(
                 icon: const Icon(Icons.edit_outlined, size: 20),
                 onPressed: onEdit),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:salute_bettin/core/theme.dart';
 import 'package:salute_bettin/data/models/appuntamento.dart';
 import 'package:salute_bettin/data/repositories/local_repository.dart';
+import 'package:salute_bettin/data/services/notification_service.dart';
 import 'package:uuid/uuid.dart';
 
 class AppuntamentoFormPage extends StatefulWidget {
@@ -24,7 +25,6 @@ class _AppuntamentoFormPageState extends State<AppuntamentoFormPage> {
   late DateTime _data;
   late TipoAppuntamento _tipo;
   late bool _promemoria;
-  late bool _completato;
   bool _saving = false;
 
   @override
@@ -39,7 +39,6 @@ class _AppuntamentoFormPageState extends State<AppuntamentoFormPage> {
     _noteCtrl = TextEditingController(text: a?.note ?? '');
     _costoCtrl = TextEditingController(
         text: a?.costo == null ? '' : a!.costo!.toStringAsFixed(2));
-    _completato = a?.completato ?? false;
     _data = a?.data ?? DateTime.now();
     _tipo = a?.tipo ?? TipoAppuntamento.visita;
     _promemoria = a?.promemoria ?? true;
@@ -89,10 +88,13 @@ class _AppuntamentoFormPageState extends State<AppuntamentoFormPage> {
         indirizzo: _indirizzoCtrl.text.trim().isEmpty ? null : _indirizzoCtrl.text.trim(),
         note: _noteCtrl.text.trim().isEmpty ? null : _noteCtrl.text.trim(),
         promemoria: _promemoria,
-        completato: _completato,
+        completato: widget.appuntamento?.completato ?? false,
         costo: _parseCosto(_costoCtrl.text),
       );
       await repo.saveAppuntamento(a);
+      // Promemoria: richiede il permesso (una volta) e programma la notifica
+      await NotificationService.instance.richiediPermesso();
+      await NotificationService.instance.pianifica(a);
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Errore: $e')));
@@ -172,8 +174,8 @@ class _AppuntamentoFormPageState extends State<AppuntamentoFormPage> {
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
               decoration: const InputDecoration(
-                labelText: 'Costo (CHF)',
-                hintText: 'Previsto o effettivo',
+                labelText: 'Costo (€)',
+                helperText: 'Se indicato, la visita/esame conta nelle statistiche',
                 prefixIcon: Icon(Icons.payments_outlined),
               ),
               validator: (v) {
@@ -185,15 +187,8 @@ class _AppuntamentoFormPageState extends State<AppuntamentoFormPage> {
             const SizedBox(height: 8),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Effettuato'),
-              subtitle: const Text('Conta nelle statistiche annuali'),
-              value: _completato,
-              onChanged: (v) => setState(() => _completato = v),
-              activeColor: AppTheme.primary,
-            ),
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
               title: const Text('Promemoria'),
+              subtitle: const Text('Notifica prima di visite ed esami (vedi Impostazioni)'),
               value: _promemoria,
               onChanged: (v) => setState(() => _promemoria = v),
               activeColor: AppTheme.primary,

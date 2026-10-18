@@ -15,6 +15,7 @@ import 'package:salute_bettin/features/esami/esami_page.dart';
 import 'package:salute_bettin/features/visite/visite_page.dart';
 import 'package:salute_bettin/features/farmaci/farmaci_page.dart';
 import 'package:salute_bettin/features/calendario/calendario_page.dart';
+import 'package:salute_bettin/features/impostazioni/promemoria_section.dart';
 
 final tokenUsageProvider = FutureProvider<List<TokenUsage>>((ref) async {
   final repo = await ref.read(repositoryProvider.future);
@@ -539,6 +540,11 @@ class _ImpostazioniPageState extends ConsumerState<ImpostazioniPage> {
             subtitle: Text('Non disponibile su questo dispositivo'),
             enabled: false,
           ),
+
+        const Divider(),
+
+        // ─── Promemoria ────────────────────────────────────
+        const PromemoriaSection(),
 
         const Divider(),
 

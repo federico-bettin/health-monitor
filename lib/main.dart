@@ -11,6 +11,7 @@ import 'package:salute_bettin/data/models/farmaco.dart';
 import 'package:salute_bettin/data/models/paziente.dart';
 import 'package:salute_bettin/data/models/token_usage.dart';
 import 'package:salute_bettin/data/models/visita.dart';
+import 'package:salute_bettin/data/services/notification_service.dart';
 import 'package:salute_bettin/data/services/settings_service.dart';
 
 final linguaProvider = StateProvider<String>((ref) {
@@ -43,6 +44,12 @@ void main() async {
   Hive.registerAdapter(TokenUsageAdapter());
 
   await SettingsService.init();
+
+  // Notifiche promemoria: init e riprogrammazione (non blocca l'avvio se fallisce)
+  try {
+    await NotificationService.instance.init();
+    await NotificationService.instance.rischedulaTutti();
+  } catch (_) {}
 
   runApp(const ProviderScope(child: SaluteBettinApp()));
 }

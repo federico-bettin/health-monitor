@@ -136,6 +136,21 @@ class SettingsService {
   Future<void> setAiModel(String model) =>
       _prefs.setString('ai_model', model);
 
+  // ─── Promemoria appuntamenti (visite/esami) ───────────────
+  // Comportamento unico per tutti: N giorni prima, a una certa ora.
+  bool get notifAttive => _prefs.getBool('notif_attive') ?? true;
+  Future<void> setNotifAttive(bool v) => _prefs.setBool('notif_attive', v);
+
+  /// Giorni di anticipo (default 3)
+  int get notifGiorniPrima => _prefs.getInt('notif_giorni_prima') ?? 3;
+  Future<void> setNotifGiorniPrima(int v) =>
+      _prefs.setInt('notif_giorni_prima', v);
+
+  /// Ora della notifica, in minuti da mezzanotte (default 9:00 = 540)
+  int get notifOraMinuti => _prefs.getInt('notif_ora_minuti') ?? 540;
+  Future<void> setNotifOraMinuti(int v) =>
+      _prefs.setInt('notif_ora_minuti', v);
+
   // ─── Reset ────────────────────────────────────────────────
   Future<void> reset() => _prefs.clear();
 }

@@ -1,0 +1,68 @@
+# ─── API KEYS E SEGRETI ───────────────────────────────────────
+# constants.dart contiene la API key Anthropic — NON committare!
+lib/core/constants.dart
+
+# ─── Flutter ──────────────────────────────────────────────────
+# Misc
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# VS Code
+.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio
+**/android/key.properties
+**/android/app/google-services.json
+**/android/app/keystore/
+*.jks
+*.keystore
+
+# iOS
+**/ios/Runner/GoogleService-Info.plist
+
+# Web
+lib/generated_plugin_registrant.dart
+
+# Generated files
+*.g.dart
+*.freezed.dart
+
+# Coverage
+coverage/
+
+# ─── Hive data ────────────────────────────────────────────────
+*.hive
+*.lock
+
+# ─── Logs ─────────────────────────────────────────────────────
+*.log
+
+# ─── macOS ────────────────────────────────────────────────────
+.DS_Store
+**/.DS_Store

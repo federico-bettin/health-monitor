@@ -40,7 +40,7 @@ class Appuntamento extends HiveObject {
   @HiveField(11)
   DateTime updatedAt;
 
-  /// Costo della visita/esame (CHF). null = non indicato.
+  /// Costo della visita/esame (€). null = non indicato.
   @HiveField(12)
   double? costo;
 

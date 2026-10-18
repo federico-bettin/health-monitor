@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:salute_bettin/core/format.dart';
 import 'package:salute_bettin/core/theme.dart';
 import 'package:salute_bettin/data/models/appuntamento.dart';
 import 'package:salute_bettin/data/repositories/local_repository.dart';
 
-/// Riepilogo di un anno: visite/esami effettuati e relativo costo.
+/// Riepilogo di un anno: visite/esami con costo indicato.
 class StatAnno {
   final int anno;
+  final List<Appuntamento> voci = []; // dal più recente al più vecchio
   int visite = 0;
   int esami = 0;
   double costoVisite = 0;
   double costoEsami = 0;
-  int senzaCosto = 0; // effettuati senza costo indicato
 
   StatAnno(this.anno);
 
@@ -19,28 +20,33 @@ class StatAnno {
   double get costoTotale => costoVisite + costoEsami;
 }
 
-/// Conta solo gli appuntamenti di tipo visita/esame marcati "effettuato".
-final statisticheProvider = FutureProvider<List<StatAnno>>((ref) async {
+/// Conta gli appuntamenti di tipo visita/esame a cui è stato indicato un costo.
+/// autoDispose: i dati vengono ricalcolati ogni volta che si apre la pagina,
+/// così includono gli appuntamenti aggiunti/modificati/cancellati nel frattempo.
+final statisticheProvider =
+    FutureProvider.autoDispose<List<StatAnno>>((ref) async {
   final repo = LocalRepository();
   await repo.init();
   final lista = await repo.getAppuntamenti();
   final map = <int, StatAnno>{};
   for (final a in lista) {
-    if (!a.completato) continue;
+    if (a.costo == null) continue;
     if (a.tipo != TipoAppuntamento.visita &&
         a.tipo != TipoAppuntamento.esame) {
       continue;
     }
     final s = map.putIfAbsent(a.data.year, () => StatAnno(a.data.year));
-    final c = a.costo ?? 0;
-    if (a.costo == null) s.senzaCosto++;
+    s.voci.add(a);
     if (a.tipo == TipoAppuntamento.visita) {
       s.visite++;
-      s.costoVisite += c;
+      s.costoVisite += a.costo!;
     } else {
       s.esami++;
-      s.costoEsami += c;
+      s.costoEsami += a.costo!;
     }
+  }
+  for (final s in map.values) {
+    s.voci.sort((a, b) => b.data.compareTo(a.data));
   }
   final anni = map.values.toList()..sort((a, b) => b.anno.compareTo(a.anno));
   return anni; // dal più recente al più vecchio
@@ -48,8 +54,6 @@ final statisticheProvider = FutureProvider<List<StatAnno>>((ref) async {
 
 class StatistichePage extends ConsumerWidget {
   const StatistichePage({super.key});
-
-  static String _chf(double v) => 'CHF ${v.toStringAsFixed(2)}';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -65,17 +69,22 @@ class StatistichePage extends ConsumerWidget {
               child: Padding(
                 padding: EdgeInsets.all(32),
                 child: Text(
-                  'Nessuna visita o esame effettuato.\n'
-                  'Dal Calendario tocca ✓ su un appuntamento per segnarlo come effettuato.',
+                  'Nessuna visita o esame con costo.\n'
+                  'Inserisci il costo di un appuntamento dal Calendario '
+                  'e comparirà qui.',
                   textAlign: TextAlign.center,
                 ),
               ),
             );
           }
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: anni.length,
-            itemBuilder: (_, i) => _AnnoCard(s: anni[i]),
+          return RefreshIndicator(
+            onRefresh: () async => ref.refresh(statisticheProvider.future),
+            child: ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              itemCount: anni.length,
+              itemBuilder: (_, i) => _AnnoCard(s: anni[i]),
+            ),
           );
         },
       ),
@@ -108,28 +117,22 @@ class _AnnoCard extends StatelessWidget {
                       textAlign: TextAlign.end, style: t.bodySmall)),
             ]),
             const Divider(),
-            _riga(context, Icons.local_hospital, 'Visite', s.visite,
-                s.costoVisite),
-            _riga(context, Icons.science, 'Esami', s.esami, s.costoEsami),
+            _riga(Icons.local_hospital, 'Visite', s.visite, s.costoVisite),
+            _riga(Icons.science, 'Esami', s.esami, s.costoEsami),
             const Divider(),
-            _riga(context, Icons.summarize, 'Totale', s.totale, s.costoTotale,
+            _riga(Icons.summarize, 'Totale', s.totale, s.costoTotale,
                 bold: true),
-            if (s.senzaCosto > 0)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  '${s.senzaCosto} senza costo indicato',
-                  style: t.bodySmall?.copyWith(color: AppTheme.textSecondaryLight),
-                ),
-              ),
+            const SizedBox(height: 12),
+            Text('Dettaglio', style: t.labelLarge?.copyWith(color: AppTheme.primary)),
+            const SizedBox(height: 4),
+            for (final a in s.voci) _voce(context, a),
           ],
         ),
       ),
     );
   }
 
-  Widget _riga(BuildContext context, IconData icona, String label, int n,
-      double costo,
+  Widget _riga(IconData icona, String label, int n, double costo,
       {bool bold = false}) {
     final st = TextStyle(fontWeight: bold ? FontWeight.bold : null);
     return Padding(
@@ -141,9 +144,33 @@ class _AnnoCard extends StatelessWidget {
         Text('$n', style: st),
         SizedBox(
           width: 110,
-          child: Text(StatistichePage._chf(costo),
+          child: Text(formatEuro(costo),
               textAlign: TextAlign.end, style: st),
         ),
+      ]),
+    );
+  }
+
+  Widget _voce(BuildContext context, Appuntamento a) {
+    final t = Theme.of(context).textTheme;
+    final isEsame = a.tipo == TipoAppuntamento.esame;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(children: [
+        Icon(isEsame ? Icons.science : Icons.local_hospital,
+            size: 16,
+            color: isEsame ? const Color(0xFF4CAF50) : const Color(0xFF2196F3)),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(a.titolo, style: t.bodyMedium),
+              Text(formatData(a.data), style: t.bodySmall),
+            ],
+          ),
+        ),
+        Text(formatEuro(a.costo!), style: t.bodyMedium),
       ]),
     );
   }
