@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:salute_bettin/core/format.dart';
+import 'package:salute_bettin/core/i18n.dart';
 import 'package:salute_bettin/data/models/appuntamento.dart';
 import 'package:salute_bettin/data/repositories/local_repository.dart';
 import 'package:salute_bettin/data/services/settings_service.dart';
@@ -89,13 +90,13 @@ class NotificationService {
       if (!quando.isAfter(tz.TZDateTime.now(tz.local))) return; // già passata
 
       final quanto = n == 0
-          ? 'oggi'
+          ? tr('oggi')
           : n == 1
-              ? 'domani'
-              : 'tra $n giorni';
-      final tipo = a.tipo == TipoAppuntamento.esame ? 'Esame' : 'Visita';
+              ? tr('domani')
+              : tr('tra {0} giorni', [n]);
+      final tipo = a.tipo == TipoAppuntamento.esame ? tr('Esame') : tr('Visita');
       final dettagli = StringBuffer('${a.titolo} · ${formatData(a.data)}');
-      if (a.ora != null && a.ora!.isNotEmpty) dettagli.write(' alle ${a.ora}');
+      if (a.ora != null && a.ora!.isNotEmpty) dettagli.write(tr(' alle {0}', [a.ora]));
       if (a.struttura != null && a.struttura!.isNotEmpty) {
         dettagli.write(' · ${a.struttura}');
       }

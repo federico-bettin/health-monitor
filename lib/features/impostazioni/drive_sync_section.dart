@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import 'package:salute_bettin/core/i18n.dart';
 import 'package:salute_bettin/core/theme.dart';
 import 'package:salute_bettin/data/services/drive_sync_service.dart';
 import 'package:salute_bettin/data/services/settings_service.dart';

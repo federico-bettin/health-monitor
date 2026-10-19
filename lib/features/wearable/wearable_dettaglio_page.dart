@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import 'package:salute_bettin/core/i18n.dart';
 import 'package:health/health.dart';
 import 'package:intl/intl.dart';
 import 'package:salute_bettin/core/theme.dart';

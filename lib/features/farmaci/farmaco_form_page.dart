@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import 'package:salute_bettin/core/i18n.dart';
 import 'package:salute_bettin/core/theme.dart';
 import 'package:salute_bettin/data/models/farmaco.dart';
 import 'package:salute_bettin/data/repositories/local_repository.dart';
@@ -115,30 +116,30 @@ class _FarmacoFormPageState extends State<FarmacoFormPage> {
           children: [
             TextFormField(
               controller: _nomeCtrl,
-              decoration: const InputDecoration(labelText: 'Nome farmaco *'),
-              validator: (v) => v == null || v.trim().isEmpty ? 'Campo obbligatorio' : null,
+              decoration: trDeco(InputDecoration(labelText: 'Nome farmaco *')),
+              validator: (v) => v == null || v.trim().isEmpty ? tr('Campo obbligatorio') : null,
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _principioCtrl,
-              decoration: const InputDecoration(labelText: 'Principio attivo'),
+              decoration: trDeco(InputDecoration(labelText: 'Principio attivo')),
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _dosaggioCtrl,
-              decoration: const InputDecoration(labelText: 'Dosaggio *', hintText: 'es. 10mg'),
-              validator: (v) => v == null || v.trim().isEmpty ? 'Campo obbligatorio' : null,
+              decoration: trDeco(InputDecoration(labelText: 'Dosaggio *', hintText: 'es. 10mg')),
+              validator: (v) => v == null || v.trim().isEmpty ? tr('Campo obbligatorio') : null,
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _frequenzaCtrl,
-              decoration: const InputDecoration(labelText: 'Frequenza *', hintText: 'es. 1 volta al giorno'),
-              validator: (v) => v == null || v.trim().isEmpty ? 'Campo obbligatorio' : null,
+              decoration: trDeco(InputDecoration(labelText: 'Frequenza *', hintText: 'es. 1 volta al giorno')),
+              validator: (v) => v == null || v.trim().isEmpty ? tr('Campo obbligatorio') : null,
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _medicoCtrl,
-              decoration: const InputDecoration(labelText: 'Medico prescrittore'),
+              decoration: trDeco(InputDecoration(labelText: 'Medico prescrittore')),
             ),
             const SizedBox(height: 16),
             SwitchListTile(
@@ -168,7 +169,7 @@ class _FarmacoFormPageState extends State<FarmacoFormPage> {
             const SizedBox(height: 8),
             TextFormField(
               controller: _noteCtrl,
-              decoration: const InputDecoration(labelText: 'Note'),
+              decoration: trDeco(InputDecoration(labelText: 'Note')),
               maxLines: 3,
             ),
             const SizedBox(height: 32),

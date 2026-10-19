@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import 'package:salute_bettin/core/i18n.dart';
 import 'package:salute_bettin/core/theme.dart';
 import 'package:salute_bettin/data/models/visita.dart';
 import 'package:salute_bettin/data/repositories/local_repository.dart';
@@ -130,12 +131,12 @@ class _VisitaFormPageState extends State<VisitaFormPage> {
           children: [
             TextFormField(
               controller: _specialitaCtrl,
-              decoration: const InputDecoration(
+              decoration: trDeco(InputDecoration(
                 labelText: 'Specialità *',
                 hintText: 'es. Cardiologia, Ortopedia...',
-              ),
+              )),
               validator: (v) =>
-                  v == null || v.trim().isEmpty ? 'Campo obbligatorio' : null,
+                  v == null || v.trim().isEmpty ? tr('Campo obbligatorio') : null,
             ),
             const SizedBox(height: 16),
             ListTile(
@@ -150,31 +151,31 @@ class _VisitaFormPageState extends State<VisitaFormPage> {
             const SizedBox(height: 8),
             TextFormField(
               controller: _medicoCtrl,
-              decoration: const InputDecoration(labelText: 'Medico'),
+              decoration: trDeco(InputDecoration(labelText: 'Medico')),
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _strutturaCtrl,
               decoration:
-                  const InputDecoration(labelText: 'Struttura / Ospedale'),
+                  trDeco(InputDecoration(labelText: 'Struttura / Ospedale')),
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _diagnosiCtrl,
-              decoration: const InputDecoration(labelText: 'Diagnosi'),
+              decoration: trDeco(InputDecoration(labelText: 'Diagnosi')),
               maxLines: 3,
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _terapiaCtrl,
               decoration:
-                  const InputDecoration(labelText: 'Terapia prescritta'),
+                  trDeco(InputDecoration(labelText: 'Terapia prescritta')),
               maxLines: 3,
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _noteCtrl,
-              decoration: const InputDecoration(labelText: 'Note'),
+              decoration: trDeco(InputDecoration(labelText: 'Note')),
               maxLines: 3,
             ),
             const SizedBox(height: 32),

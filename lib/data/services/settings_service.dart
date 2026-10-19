@@ -25,6 +25,11 @@ class SettingsService {
   Future<void> setLanguageCode(String code) =>
       _prefs.setString(AppConstants.prefLanguageCode, code);
 
+  // ─── Traduzioni dei dati dell'utente (esami, visite...) ──
+  String get datiTradEn => _prefs.getString('dati_tr_en') ?? '{}';
+  Future<void> setDatiTradEn(String json) =>
+      _prefs.setString('dati_tr_en', json);
+
   // ─── Biometrico ───────────────────────────────────────────
   bool get biometricEnabled =>
       _prefs.getBool(AppConstants.prefBiometricEnabled) ?? false;

@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import 'package:salute_bettin/core/i18n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salute_bettin/core/theme.dart';
 import 'package:salute_bettin/data/repositories/local_repository.dart';
@@ -244,12 +245,12 @@ class WearablePage extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.bug_report_outlined),
-            tooltip: 'Diagnostica HC',
+            tooltip: tr('Diagnostica HC'),
             onPressed: () => _mostraDiagnostica(context),
           ),
           IconButton(
             icon: const Icon(Icons.info_outline),
-            tooltip: 'Sorgenti passi',
+            tooltip: tr('Sorgenti passi'),
             onPressed: () => _mostraSorgenti(context, ref),
           ),
           IconButton(

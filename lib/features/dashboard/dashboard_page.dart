@@ -3,7 +3,8 @@ import 'dart:io';
 import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import 'package:salute_bettin/core/i18n.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -432,13 +433,13 @@ class DashboardPage extends ConsumerWidget {
             error: (_, __) => const SizedBox.shrink(),
             data: (_) => IconButton(
               icon: const Icon(Icons.refresh),
-              tooltip: 'Ricalcola score',
+              tooltip: tr('Ricalcola score'),
               onPressed: () => _ricalcolaScore(context, ref),
             ),
           ),
           IconButton(
             icon: const Icon(Icons.bar_chart),
-            tooltip: 'Statistiche visite ed esami',
+            tooltip: tr('Statistiche visite ed esami'),
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const StatistichePage()),
@@ -450,7 +451,7 @@ class DashboardPage extends ConsumerWidget {
           ),
           IconButton(
             icon: const Icon(Icons.power_settings_new),
-            tooltip: 'Chiudi app',
+            tooltip: tr('Chiudi app'),
             onPressed: () => _chiudiApp(context),
           ),
         ],

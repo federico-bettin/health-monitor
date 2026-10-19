@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import 'package:salute_bettin/core/i18n.dart';
 import 'package:salute_bettin/core/theme.dart';
 import 'package:salute_bettin/data/models/appuntamento.dart';
 import 'package:salute_bettin/data/repositories/local_repository.dart';
@@ -124,14 +125,14 @@ class _AppuntamentoFormPageState extends State<AppuntamentoFormPage> {
           children: [
             TextFormField(
               controller: _titoloCtrl,
-              decoration: const InputDecoration(labelText: 'Titolo *', hintText: 'es. Visita cardiologo'),
-              validator: (v) => v == null || v.trim().isEmpty ? 'Campo obbligatorio' : null,
+              decoration: trDeco(InputDecoration(labelText: 'Titolo *', hintText: 'es. Visita cardiologo')),
+              validator: (v) => v == null || v.trim().isEmpty ? tr('Campo obbligatorio') : null,
             ),
             const SizedBox(height: 16),
             // Tipo
             DropdownButtonFormField<TipoAppuntamento>(
               value: _tipo,
-              decoration: const InputDecoration(labelText: 'Tipo'),
+              decoration: trDeco(InputDecoration(labelText: 'Tipo')),
               items: const [
                 DropdownMenuItem(value: TipoAppuntamento.visita, child: Text('Visita')),
                 DropdownMenuItem(value: TipoAppuntamento.esame, child: Text('Esame')),
@@ -151,37 +152,37 @@ class _AppuntamentoFormPageState extends State<AppuntamentoFormPage> {
             const Divider(),
             TextFormField(
               controller: _oraCtrl,
-              decoration: const InputDecoration(labelText: 'Ora', hintText: 'es. 10:30'),
+              decoration: trDeco(InputDecoration(labelText: 'Ora', hintText: 'es. 10:30')),
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _medicoCtrl,
-              decoration: const InputDecoration(labelText: 'Medico'),
+              decoration: trDeco(InputDecoration(labelText: 'Medico')),
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _strutturaCtrl,
-              decoration: const InputDecoration(labelText: 'Struttura / Ospedale'),
+              decoration: trDeco(InputDecoration(labelText: 'Struttura / Ospedale')),
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _indirizzoCtrl,
-              decoration: const InputDecoration(labelText: 'Indirizzo'),
+              decoration: trDeco(InputDecoration(labelText: 'Indirizzo')),
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _costoCtrl,
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(
+              decoration: trDeco(InputDecoration(
                 labelText: 'Costo (€)',
                 helperText: 'Se indicato, la visita/esame conta nelle statistiche',
                 prefixIcon: Icon(Icons.payments_outlined),
-              ),
+              )),
               validator: (v) {
                 if (v == null || v.trim().isEmpty) return null;
                 final x = _parseCosto(v);
-                return (x == null || x < 0) ? 'Importo non valido' : null;
+                return (x == null || x < 0) ? tr('Importo non valido') : null;
               },
             ),
             const SizedBox(height: 8),
@@ -196,7 +197,7 @@ class _AppuntamentoFormPageState extends State<AppuntamentoFormPage> {
             const SizedBox(height: 8),
             TextFormField(
               controller: _noteCtrl,
-              decoration: const InputDecoration(labelText: 'Note'),
+              decoration: trDeco(InputDecoration(labelText: 'Note')),
               maxLines: 3,
             ),
             const SizedBox(height: 32),

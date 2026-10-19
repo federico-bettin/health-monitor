@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import 'package:salute_bettin/core/i18n.dart';
 import 'package:go_router/go_router.dart';
 import 'package:salute_bettin/features/auth/splash_page.dart';
 import 'package:salute_bettin/features/calendario/calendario_page.dart';
@@ -91,6 +92,7 @@ class _MainShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final idx = _currentIndex(context);
+    Localizations.localeOf(context); // si ricostruisce al cambio lingua
     return Scaffold(
       body: child,
       bottomNavigationBar: BottomNavigationBar(
@@ -105,19 +107,19 @@ class _MainShell extends StatelessWidget {
             case 5: context.go(AppRoutes.impostazioni);
           }
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(icon: Icon(Icons.dashboard_outlined),
-              activeIcon: Icon(Icons.dashboard), label: 'Home'),
+              activeIcon: Icon(Icons.dashboard), label: tr('Home')),
           BottomNavigationBarItem(icon: Icon(Icons.science_outlined),
-              activeIcon: Icon(Icons.science), label: 'Esami'),
+              activeIcon: Icon(Icons.science), label: tr('Esami')),
           BottomNavigationBarItem(icon: Icon(Icons.local_hospital_outlined),
-              activeIcon: Icon(Icons.local_hospital), label: 'Visite'),
+              activeIcon: Icon(Icons.local_hospital), label: tr('Visite')),
           BottomNavigationBarItem(icon: Icon(Icons.medication_outlined),
-              activeIcon: Icon(Icons.medication), label: 'Farmaci'),
+              activeIcon: Icon(Icons.medication), label: tr('Farmaci')),
           BottomNavigationBarItem(icon: Icon(Icons.calendar_month_outlined),
-              activeIcon: Icon(Icons.calendar_month), label: 'Calendario'),
+              activeIcon: Icon(Icons.calendar_month), label: tr('Calendario')),
           BottomNavigationBarItem(icon: Icon(Icons.settings_outlined),
-              activeIcon: Icon(Icons.settings), label: 'Impostazioni'),
+              activeIcon: Icon(Icons.settings), label: tr('Impostazioni')),
         ],
       ),
     );

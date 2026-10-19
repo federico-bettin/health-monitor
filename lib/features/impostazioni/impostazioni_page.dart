@@ -1,5 +1,6 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import 'package:salute_bettin/core/i18n.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salute_bettin/core/constants.dart';
@@ -16,6 +17,7 @@ import 'package:salute_bettin/features/visite/visite_page.dart';
 import 'package:salute_bettin/features/farmaci/farmaci_page.dart';
 import 'package:salute_bettin/features/calendario/calendario_page.dart';
 import 'package:salute_bettin/features/impostazioni/promemoria_section.dart';
+import 'package:salute_bettin/features/impostazioni/language_section.dart';
 import 'package:salute_bettin/features/impostazioni/drive_sync_section.dart';
 import 'package:salute_bettin/data/services/drive_sync_service.dart';
 
@@ -546,6 +548,11 @@ class _ImpostazioniPageState extends ConsumerState<ImpostazioniPage> {
             subtitle: Text('Non disponibile su questo dispositivo'),
             enabled: false,
           ),
+
+        const Divider(),
+
+        // ─── Lingua ────────────────────────────────────────
+        const LanguageSection(),
 
         const Divider(),
 

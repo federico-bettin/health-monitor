@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import 'package:salute_bettin/core/i18n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:salute_bettin/core/theme.dart';
 import 'package:salute_bettin/data/models/appuntamento.dart';
@@ -63,7 +64,7 @@ class _CalendarioPageState extends ConsumerState<CalendarioPage> {
                   ),
                   Expanded(
                     child: Text(
-                      '${mesi[_meseCorrente.month - 1]} ${_meseCorrente.year}',
+                      '${tr(mesi[_meseCorrente.month - 1])} ${_meseCorrente.year}',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.titleLarge,
                     ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:salute_bettin/core/i18n.dart' show caricaTraduzioniDati;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -57,6 +58,7 @@ void main() async {
     await DriveSyncService.instance.init();
   } catch (_) {}
 
+  caricaTraduzioniDati();
   runApp(const ProviderScope(child: SaluteBettinApp()));
 }
 
@@ -68,7 +70,7 @@ class SaluteBettinApp extends ConsumerWidget {
     final lingua = ref.watch(linguaProvider);
 
     return MaterialApp.router(
-      title: 'SaluteBettin',
+      title: 'Health Monitor',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,

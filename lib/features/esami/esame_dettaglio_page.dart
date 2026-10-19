@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import 'package:salute_bettin/core/i18n.dart';
 import 'package:open_file/open_file.dart';
 import 'package:salute_bettin/core/theme.dart';
 import 'package:salute_bettin/data/models/esame.dart';

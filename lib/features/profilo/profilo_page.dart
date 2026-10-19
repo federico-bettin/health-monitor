@@ -1,5 +1,6 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import 'package:salute_bettin/core/i18n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -836,18 +837,18 @@ class _ProfiloFormPageState extends State<ProfiloFormPage> {
                   child: TextFormField(
                 controller: _nomeCtrl,
                 decoration:
-                    const InputDecoration(labelText: 'Nome *'),
+                    trDeco(InputDecoration(labelText: 'Nome *')),
                 validator: (v) =>
-                    v == null || v.trim().isEmpty ? 'Obbligatorio' : null,
+                    v == null || v.trim().isEmpty ? tr('Obbligatorio') : null,
               )),
               const SizedBox(width: 12),
               Expanded(
                   child: TextFormField(
                 controller: _cognomeCtrl,
                 decoration:
-                    const InputDecoration(labelText: 'Cognome *'),
+                    trDeco(InputDecoration(labelText: 'Cognome *')),
                 validator: (v) =>
-                    v == null || v.trim().isEmpty ? 'Obbligatorio' : null,
+                    v == null || v.trim().isEmpty ? tr('Obbligatorio') : null,
               )),
             ]),
             const SizedBox(height: 16),
@@ -877,8 +878,8 @@ class _ProfiloFormPageState extends State<ProfiloFormPage> {
               Expanded(
                   child: TextFormField(
                 controller: _pesoCtrl,
-                decoration: const InputDecoration(
-                    labelText: 'Peso (kg)', hintText: 'es. 75.5'),
+                decoration: trDeco(InputDecoration(
+                    labelText: 'Peso (kg)', hintText: 'es. 75.5')),
                 keyboardType: const TextInputType.numberWithOptions(
                     decimal: true),
                 onChanged: (_) => setState(() {}),
@@ -887,8 +888,8 @@ class _ProfiloFormPageState extends State<ProfiloFormPage> {
               Expanded(
                   child: TextFormField(
                 controller: _altezzaCtrl,
-                decoration: const InputDecoration(
-                    labelText: 'Altezza (cm)', hintText: 'es. 175'),
+                decoration: trDeco(InputDecoration(
+                    labelText: 'Altezza (cm)', hintText: 'es. 175')),
                 keyboardType: TextInputType.number,
                 onChanged: (_) => setState(() {}),
               )),
@@ -917,43 +918,43 @@ class _ProfiloFormPageState extends State<ProfiloFormPage> {
             // ── Altri campi anagrafici ───────────────────
             TextFormField(
                 controller: _gruppoCtrl,
-                decoration: const InputDecoration(
+                decoration: trDeco(InputDecoration(
                     labelText: 'Gruppo sanguigno',
-                    hintText: 'es. A+')),
+                    hintText: 'es. A+'))),
             const SizedBox(height: 16),
             TextFormField(
                 controller: _cfCtrl,
-                decoration: const InputDecoration(
-                    labelText: 'Codice fiscale')),
+                decoration: trDeco(InputDecoration(
+                    labelText: 'Codice fiscale'))),
             const SizedBox(height: 16),
             TextFormField(
                 controller: _medicoCtrl,
-                decoration: const InputDecoration(
-                    labelText: 'Medico di base')),
+                decoration: trDeco(InputDecoration(
+                    labelText: 'Medico di base'))),
             const SizedBox(height: 16),
             TextFormField(
                 controller: _telefonoCtrl,
                 decoration:
-                    const InputDecoration(labelText: 'Telefono'),
+                    trDeco(InputDecoration(labelText: 'Telefono')),
                 keyboardType: TextInputType.phone),
             const SizedBox(height: 16),
             TextFormField(
                 controller: _emailCtrl,
                 decoration:
-                    const InputDecoration(labelText: 'Email'),
+                    trDeco(InputDecoration(labelText: 'Email')),
                 keyboardType: TextInputType.emailAddress),
             const SizedBox(height: 16),
             TextFormField(
                 controller: _allergieCtrl,
-                decoration: const InputDecoration(
+                decoration: trDeco(InputDecoration(
                     labelText: 'Allergie',
-                    hintText: 'Separate da virgola')),
+                    hintText: 'Separate da virgola'))),
             const SizedBox(height: 16),
             TextFormField(
                 controller: _patologieCtrl,
-                decoration: const InputDecoration(
+                decoration: trDeco(InputDecoration(
                     labelText: 'Patologie croniche',
-                    hintText: 'Separate da virgola')),
+                    hintText: 'Separate da virgola'))),
             const SizedBox(height: 24),
 
             // ── Stile di vita ────────────────────────────
@@ -991,21 +992,21 @@ class _ProfiloFormPageState extends State<ProfiloFormPage> {
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                     child: TextFormField(
                       controller: _sigaretteCtrl,
-                      decoration: const InputDecoration(
+                      decoration: trDeco(InputDecoration(
                         labelText: 'Sigarette al giorno',
                         hintText: 'es. 10',
                         prefixIcon: Icon(Icons.smoking_rooms),
                         suffixText: 'sig/g',
-                      ),
+                      )),
                       keyboardType: TextInputType.number,
                       validator: (v) {
                         if (!_fumo) return null;
                         if (v == null || v.trim().isEmpty) {
-                          return 'Inserisci il numero di sigarette';
+                          return tr('Inserisci il numero di sigarette');
                         }
                         if (int.tryParse(v.trim()) == null ||
                             int.parse(v.trim()) <= 0) {
-                          return 'Numero non valido';
+                          return tr('Numero non valido');
                         }
                         return null;
                       },
@@ -1043,21 +1044,21 @@ class _ProfiloFormPageState extends State<ProfiloFormPage> {
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                     child: TextFormField(
                       controller: _bicchieriCtrl,
-                      decoration: const InputDecoration(
+                      decoration: trDeco(InputDecoration(
                         labelText: 'Bicchieri di vino al giorno',
                         hintText: 'es. 1',
                         prefixIcon: Icon(Icons.wine_bar_outlined),
                         suffixText: 'bic/g',
-                      ),
+                      )),
                       keyboardType: TextInputType.number,
                       validator: (v) {
                         if (!_alcool) return null;
                         if (v == null || v.trim().isEmpty) {
-                          return 'Inserisci il numero di bicchieri';
+                          return tr('Inserisci il numero di bicchieri');
                         }
                         if (int.tryParse(v.trim()) == null ||
                             int.parse(v.trim()) <= 0) {
-                          return 'Numero non valido';
+                          return tr('Numero non valido');
                         }
                         return null;
                       },
@@ -1099,12 +1100,12 @@ class _ProfiloFormPageState extends State<ProfiloFormPage> {
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _passiCtrl,
-                  decoration: const InputDecoration(
+                  decoration: trDeco(InputDecoration(
                     labelText: 'Passi stimati al giorno (se no ring)',
                     hintText: 'es. 6000',
                     prefixIcon: Icon(Icons.show_chart),
                     suffixText: 'passi',
-                  ),
+                  )),
                   keyboardType: TextInputType.number,
                 ),
               ]),
@@ -1186,21 +1187,21 @@ class _ProfiloFormPageState extends State<ProfiloFormPage> {
                 TextFormField(
                   controller: _anamnestiCtrl,
                   maxLines: 6,
-                  decoration: const InputDecoration(
+                  decoration: trDeco(InputDecoration(
                     hintText:
                         'Es: Ho avuto il morbillo da bambino, '
                         'allergia alla penicillina, mia madre ha il diabete tipo 2, '
                         'ho fatto il vaccino anti-covid nel 2021...',
                     border: InputBorder.none,
                     isDense: true,
-                  ),
+                  )),
                 ),
               ])),
             const SizedBox(height: 16),
             TextFormField(
                 controller: _noteCtrl,
                 decoration:
-                    const InputDecoration(labelText: 'Note'),
+                    trDeco(InputDecoration(labelText: 'Note')),
                 maxLines: 3),
             const SizedBox(height: 32),
           ],

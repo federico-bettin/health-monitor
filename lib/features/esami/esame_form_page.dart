@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import 'package:salute_bettin/core/i18n.dart';
 import 'package:salute_bettin/core/theme.dart';
 import 'package:salute_bettin/data/models/esame.dart';
 import 'package:salute_bettin/data/repositories/local_repository.dart';
@@ -141,12 +142,12 @@ class _EsameFormPageState extends State<EsameFormPage> {
             // Tipo esame
             TextFormField(
               controller: _tipoCtrl,
-              decoration: const InputDecoration(
+              decoration: trDeco(InputDecoration(
                 labelText: 'Tipo esame *',
                 hintText: 'es. Emocromo, Lipidemia, TSH...',
-              ),
+              )),
               validator: (v) =>
-                  v == null || v.trim().isEmpty ? 'Campo obbligatorio' : null,
+                  v == null || v.trim().isEmpty ? tr('Campo obbligatorio') : null,
             ),
             const SizedBox(height: 16),
 
@@ -166,8 +167,8 @@ class _EsameFormPageState extends State<EsameFormPage> {
             // Laboratorio
             TextFormField(
               controller: _laboratorioCtrl,
-              decoration: const InputDecoration(
-                  labelText: 'Laboratorio / Struttura'),
+              decoration: trDeco(InputDecoration(
+                  labelText: 'Laboratorio / Struttura')),
             ),
             const SizedBox(height: 16),
 
@@ -175,14 +176,14 @@ class _EsameFormPageState extends State<EsameFormPage> {
             TextFormField(
               controller: _medicoCtrl,
               decoration:
-                  const InputDecoration(labelText: 'Medico richiedente'),
+                  trDeco(InputDecoration(labelText: 'Medico richiedente')),
             ),
             const SizedBox(height: 16),
 
             // Note
             TextFormField(
               controller: _noteCtrl,
-              decoration: const InputDecoration(labelText: 'Note'),
+              decoration: trDeco(InputDecoration(labelText: 'Note')),
               maxLines: 2,
             ),
             const SizedBox(height: 24),
@@ -328,30 +329,30 @@ class _ValoreCardState extends State<_ValoreCard> {
               flex: 3,
               child: TextFormField(
                 controller: _nomeCtrl,
-                decoration: const InputDecoration(
-                    labelText: 'Nome valore *', isDense: true),
+                decoration: trDeco(InputDecoration(
+                    labelText: 'Nome valore *', isDense: true)),
                 validator: (v) =>
-                    v == null || v.trim().isEmpty ? 'Obbligatorio' : null,
+                    v == null || v.trim().isEmpty ? tr('Obbligatorio') : null,
               )),
           const SizedBox(width: 8),
           Expanded(
               flex: 2,
               child: TextFormField(
                 controller: _valoreCtrl,
-                decoration: const InputDecoration(
-                    labelText: 'Valore *', isDense: true),
+                decoration: trDeco(InputDecoration(
+                    labelText: 'Valore *', isDense: true)),
                 keyboardType: const TextInputType.numberWithOptions(
                     decimal: true, signed: true),
                 validator: (v) =>
-                    v == null || v.trim().isEmpty ? 'Obbligatorio' : null,
+                    v == null || v.trim().isEmpty ? tr('Obbligatorio') : null,
               )),
           const SizedBox(width: 8),
           Expanded(
               flex: 1,
               child: TextFormField(
                 controller: _unitaCtrl,
-                decoration: const InputDecoration(
-                    labelText: 'Unità', isDense: true),
+                decoration: trDeco(InputDecoration(
+                    labelText: 'Unità', isDense: true)),
               )),
           IconButton(
             icon: const Icon(Icons.delete_outline,
@@ -366,8 +367,8 @@ class _ValoreCardState extends State<_ValoreCard> {
           Expanded(
               child: TextFormField(
             controller: _refMinCtrl,
-            decoration: const InputDecoration(
-                labelText: 'Ref. min', isDense: true),
+            decoration: trDeco(InputDecoration(
+                labelText: 'Ref. min', isDense: true)),
             keyboardType: const TextInputType.numberWithOptions(
                 decimal: true, signed: true),
           )),
@@ -375,8 +376,8 @@ class _ValoreCardState extends State<_ValoreCard> {
           Expanded(
               child: TextFormField(
             controller: _refMaxCtrl,
-            decoration: const InputDecoration(
-                labelText: 'Ref. max', isDense: true),
+            decoration: trDeco(InputDecoration(
+                labelText: 'Ref. max', isDense: true)),
             keyboardType: const TextInputType.numberWithOptions(
                 decimal: true, signed: true),
           )),

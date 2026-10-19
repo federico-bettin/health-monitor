@@ -86,6 +86,19 @@ class ClaudeService {
   static const String _baseUrl = 'https://api.anthropic.com/v1/messages';
 
   /// Legge il modello da SettingsService — fallback a Haiku se non disponibile
+  /// In inglese chiede a Claude di scrivere tutti i testi in inglese.
+  String _noteLingua() {
+    try {
+      if (SettingsService.instance.languageCode == 'en') {
+        return '\n\nIMPORTANT: write ALL free-text values of the JSON '
+            '(titles, summaries, descriptions, advice, recommendations) in '
+            'English. Keep the JSON keys unchanged and keep proper names, '
+            'test names and values exactly as printed in the source document.';
+      }
+    } catch (_) {}
+    return '';
+  }
+
   String _getModel() {
     try {
       return SettingsService.instance.aiModel;
@@ -100,6 +113,7 @@ class ClaudeService {
     int maxTokens = 1800,
     List<Map<String, dynamic>>? imageData,
     String? pdfBase64,
+    String? model,
   }) async {
     final content = <Map<String, dynamic>>[];
     if (pdfBase64 != null) {
@@ -119,11 +133,11 @@ class ClaudeService {
     ];
 
     final body = <String, dynamic>{
-      'model': _getModel(),
+      'model': model ?? _getModel(),
       'max_tokens': maxTokens,
       'messages': messages,
     };
-    if (systemPrompt != null) body['system'] = systemPrompt;
+    if (systemPrompt != null) body['system'] = systemPrompt + _noteLingua();
 
     final response = await http.post(
       Uri.parse(_baseUrl),
@@ -151,6 +165,83 @@ class ClaudeService {
       inputTokens: json['usage']['input_tokens'] ?? 0,
       outputTokens: json['usage']['output_tokens'] ?? 0,
     );
+  }
+
+  // ─── Traduce l'analisi salute già calcolata (senza ricalcolarla) ──
+  /// Traduce i testi del JSON [jsonData] in [lingua] ('it' o 'en'),
+  /// mantenendo chiavi, numeri e struttura. Usa il modello più economico.
+  Future<({String json, ClaudeResponse risposta})> traduciAnalisi(
+      String jsonData, String lingua) async {
+    final target = lingua == 'en' ? 'English' : 'Italian';
+    final r = await _call(
+      systemPrompt: 'You are a precise medical translator. Translate all '
+          'human-readable text values of the JSON into $target. Keep every '
+          'JSON key, number, unit and the structure exactly unchanged. '
+          'Return ONLY the valid JSON, no markdown, no backticks.',
+      prompt: jsonData,
+      maxTokens: 1800,
+      model: 'claude-haiku-4-5-20251001',
+    );
+    var t = r.text.trim();
+    if (t.startsWith('```')) {
+      t = t.replaceAll(RegExp(r'^```(?:json)?', multiLine: false), '')
+          .replaceAll('```', '')
+          .trim();
+    }
+    return (json: t, risposta: r);
+  }
+
+  /// Traduce una lista di testi (nomi esami, note, diagnosi...) in inglese.
+  /// Ritorna una mappa originale → traduzione (solo quelli riusciti).
+  Future<({Map<String, String> testi, ClaudeResponse risposta})> traduciTesti(
+      List<String> testi) async {
+    final r = await _call(
+      systemPrompt: 'You are a precise medical translator. The user sends a '
+          'JSON array of Italian strings (lab test names, medical specialties, '
+          'diagnoses, therapies, clinical notes). Translate each into English '
+          'using standard medical terminology. Keep numbers, units, drug names '
+          'and abbreviations unchanged. Return ONLY a JSON object whose keys '
+          'are the exact original Italian strings and whose values are the '
+          'English translations. No markdown, no backticks.',
+      prompt: jsonEncode(testi),
+      maxTokens: 6000,
+      model: 'claude-haiku-4-5-20251001',
+    );
+    var t = r.text.trim();
+    if (t.startsWith('```')) {
+      t = t.replaceAll('```json', '').replaceAll('```', '').trim();
+    }
+    final out = <String, String>{};
+    final i = t.indexOf('{');
+    final j = t.lastIndexOf('}');
+    final li = t.indexOf('[');
+    final lj = t.lastIndexOf(']');
+    try {
+      if (i >= 0 && j > i && (li < 0 || i < li)) {
+        final obj = jsonDecode(t.substring(i, j + 1)) as Map;
+        final norm = {
+          for (final e in obj.entries)
+            '${e.key}'.trim().toLowerCase(): e.value
+        };
+        for (final o in testi) {
+          final v = obj[o] ?? norm[o.trim().toLowerCase()];
+          if (v is String && v.trim().isNotEmpty) out[o] = v;
+        }
+      } else if (li >= 0 && lj > li) {
+        final lista = jsonDecode(t.substring(li, lj + 1)) as List;
+        if (lista.length == testi.length) {
+          for (var k = 0; k < testi.length; k++) {
+            final v = lista[k];
+            if (v is String && v.trim().isNotEmpty) out[testi[k]] = v;
+          }
+        }
+      }
+    } catch (_) {}
+    if (out.isEmpty) {
+      final snip = t.length > 150 ? t.substring(0, 150) : t;
+      throw Exception('Risposta non utilizzabile: $snip');
+    }
+    return (testi: out, risposta: r);
   }
 
   // ─── Analizza documento ───────────────────────────────────

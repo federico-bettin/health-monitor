@@ -25,7 +25,7 @@ class AuthService {
 
   /// Autentica con biometria
   /// Restituisce true se autenticato, false altrimenti
-  Future<bool> authenticate({String reason = 'Accedi a SaluteBettin'}) async {
+  Future<bool> authenticate({String reason = 'Accedi a Health Monitor'}) async {
     try {
       return await _auth.authenticate(
         localizedReason: reason,
