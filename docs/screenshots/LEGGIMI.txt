@@ -1,3 +1,0 @@
-Metti qui gli screenshot (PNG) fatti con i dati di DEMO, mai con i dati reali:
-  dashboard.png  esami.png  calendario.png  statistiche.png  impostazioni.png
-Il README li mostra con questi nomi. Larghezza consigliata: ~300-400 px ciascuno.
