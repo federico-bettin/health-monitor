@@ -141,6 +141,29 @@ class SettingsService {
   bool get notifAttive => _prefs.getBool('notif_attive') ?? true;
   Future<void> setNotifAttive(bool v) => _prefs.setBool('notif_attive', v);
 
+  // ─── Sync automatico con Drive ───────────────────────────
+  bool get driveSyncAttivo => _prefs.getBool('drive_sync_attivo') ?? true;
+  Future<void> setDriveSyncAttivo(bool v) =>
+      _prefs.setBool('drive_sync_attivo', v);
+
+  /// true = ci sono modifiche locali non ancora caricate su Drive
+  bool get driveSyncPending => _prefs.getBool('drive_sync_pending') ?? false;
+  Future<void> setDriveSyncPending(bool v) =>
+      _prefs.setBool('drive_sync_pending', v);
+
+  String? get driveSyncUltima => _prefs.getString('drive_sync_ultima');
+  Future<void> setDriveSyncUltima(String v) =>
+      _prefs.setString('drive_sync_ultima', v);
+
+  String? get driveSyncHash => _prefs.getString('drive_sync_hash');
+  Future<void> setDriveSyncHash(String v) =>
+      _prefs.setString('drive_sync_hash', v);
+
+  /// Referti già caricati: JSON {chiave: dimensione}
+  String get driveSyncReferti => _prefs.getString('drive_sync_referti') ?? '{}';
+  Future<void> setDriveSyncReferti(String v) =>
+      _prefs.setString('drive_sync_referti', v);
+
   /// Giorni di anticipo (default 3)
   int get notifGiorniPrima => _prefs.getInt('notif_giorni_prima') ?? 3;
   Future<void> setNotifGiorniPrima(int v) =>

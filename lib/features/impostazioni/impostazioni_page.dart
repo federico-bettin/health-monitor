@@ -16,6 +16,8 @@ import 'package:salute_bettin/features/visite/visite_page.dart';
 import 'package:salute_bettin/features/farmaci/farmaci_page.dart';
 import 'package:salute_bettin/features/calendario/calendario_page.dart';
 import 'package:salute_bettin/features/impostazioni/promemoria_section.dart';
+import 'package:salute_bettin/features/impostazioni/drive_sync_section.dart';
+import 'package:salute_bettin/data/services/drive_sync_service.dart';
 
 final tokenUsageProvider = FutureProvider<List<TokenUsage>>((ref) async {
   final repo = await ref.read(repositoryProvider.future);
@@ -311,6 +313,10 @@ class _ImpostazioniPageState extends ConsumerState<ImpostazioniPage> {
                 ]),
               ));
       data = await BackupService.instance.caricaDrive();
+      // Telefono nuovo: scarica anche i referti PDF mancanti
+      if (data != null) {
+        await DriveSyncService.instance.scaricaRefertiMancanti(data);
+      }
       if (mounted) Navigator.of(context, rootNavigator: true).pop();
       if (data == null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -628,6 +634,11 @@ class _ImpostazioniPageState extends ConsumerState<ImpostazioniPage> {
           error: (e, _) => ListTile(title: Text('Errore: $e')),
           data: (tokens) => _TokenCard(tokens: tokens),
         ),
+
+        const Divider(),
+
+        // ─── Sync Drive ────────────────────────────────────────
+        const DriveSyncSection(),
 
         const Divider(),
 

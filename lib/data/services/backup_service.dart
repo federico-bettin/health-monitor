@@ -173,12 +173,12 @@ class BackupService {
 
   // ─── Google Drive ─────────────────────────────────────────
 
-  Future<drive.DriveApi?> _getDriveApi() async {
+  Future<drive.DriveApi?> _getDriveApi({bool interattivo = true}) async {
     try {
       final signIn = GoogleSignIn(scopes: [_driveScope]);
       GoogleSignInAccount? account = signIn.currentUser;
       account ??= await signIn.signInSilently();
-      account ??= await signIn.signIn();
+      if (interattivo) account ??= await signIn.signIn();
       if (account == null) return null;
       final auth = await account.authentication;
       if (auth.accessToken == null) return null;
@@ -187,6 +187,14 @@ class BackupService {
       return null;
     }
   }
+
+  /// Accesso a Drive per il sync automatico. Con [interattivo] false non
+  /// mostra mai la schermata di login (ritorna null se serve).
+  Future<drive.DriveApi?> driveApi({bool interattivo = false}) =>
+      _getDriveApi(interattivo: interattivo);
+
+  Future<String> cartellaDriveId(drive.DriveApi api) =>
+      _trovaOCreaCartellaDrive(api);
 
   Future<String> _trovaOCreaCartellaDrive(drive.DriveApi api) async {
     final list = await api.files.list(

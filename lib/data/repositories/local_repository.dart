@@ -7,6 +7,7 @@ import 'package:salute_bettin/data/models/paziente.dart';
 import 'package:salute_bettin/data/models/token_usage.dart';
 import 'package:salute_bettin/data/models/visita.dart';
 import 'package:salute_bettin/data/repositories/i_data_repository.dart';
+import 'package:salute_bettin/data/services/drive_sync_service.dart';
 
 class LocalRepository implements IDataRepository {
   Box<Paziente>? _pazienteBox;
@@ -41,8 +42,10 @@ class LocalRepository implements IDataRepository {
   Future<Paziente?> getPaziente() async => _pazienteBox?.get('paziente');
 
   @override
-  Future<void> savePaziente(Paziente paziente) async =>
-      _pazienteBox?.put('paziente', paziente);
+  Future<void> savePaziente(Paziente paziente) async {
+    await _pazienteBox?.put('paziente', paziente);
+    DriveSyncService.instance.segnaModifica();
+  }
 
   @override
   Future<List<Esame>> getEsami() async => _esamiBox?.values.toList() ?? [];
@@ -51,10 +54,16 @@ class LocalRepository implements IDataRepository {
   Future<Esame?> getEsame(String id) async => _esamiBox?.get(id);
 
   @override
-  Future<void> saveEsame(Esame esame) async => _esamiBox?.put(esame.id, esame);
+  Future<void> saveEsame(Esame esame) async {
+    await _esamiBox?.put(esame.id, esame);
+    DriveSyncService.instance.segnaModifica();
+  }
 
   @override
-  Future<void> deleteEsame(String id) async => _esamiBox?.delete(id);
+  Future<void> deleteEsame(String id) async {
+    await _esamiBox?.delete(id);
+    DriveSyncService.instance.segnaModifica();
+  }
 
   @override
   Future<List<Visita>> getVisite() async => _visiteBox?.values.toList() ?? [];
@@ -63,11 +72,16 @@ class LocalRepository implements IDataRepository {
   Future<Visita?> getVisita(String id) async => _visiteBox?.get(id);
 
   @override
-  Future<void> saveVisita(Visita visita) async =>
-      _visiteBox?.put(visita.id, visita);
+  Future<void> saveVisita(Visita visita) async {
+    await _visiteBox?.put(visita.id, visita);
+    DriveSyncService.instance.segnaModifica();
+  }
 
   @override
-  Future<void> deleteVisita(String id) async => _visiteBox?.delete(id);
+  Future<void> deleteVisita(String id) async {
+    await _visiteBox?.delete(id);
+    DriveSyncService.instance.segnaModifica();
+  }
 
   @override
   Future<List<Farmaco>> getFarmaci() async =>
@@ -77,11 +91,16 @@ class LocalRepository implements IDataRepository {
   Future<Farmaco?> getFarmaco(String id) async => _farmaciBox?.get(id);
 
   @override
-  Future<void> saveFarmaco(Farmaco farmaco) async =>
-      _farmaciBox?.put(farmaco.id, farmaco);
+  Future<void> saveFarmaco(Farmaco farmaco) async {
+    await _farmaciBox?.put(farmaco.id, farmaco);
+    DriveSyncService.instance.segnaModifica();
+  }
 
   @override
-  Future<void> deleteFarmaco(String id) async => _farmaciBox?.delete(id);
+  Future<void> deleteFarmaco(String id) async {
+    await _farmaciBox?.delete(id);
+    DriveSyncService.instance.segnaModifica();
+  }
 
   @override
   Future<List<Appuntamento>> getAppuntamenti() async =>
@@ -92,12 +111,16 @@ class LocalRepository implements IDataRepository {
       _appuntamentiBox?.get(id);
 
   @override
-  Future<void> saveAppuntamento(Appuntamento appuntamento) async =>
-      _appuntamentiBox?.put(appuntamento.id, appuntamento);
+  Future<void> saveAppuntamento(Appuntamento appuntamento) async {
+    await _appuntamentiBox?.put(appuntamento.id, appuntamento);
+    DriveSyncService.instance.segnaModifica();
+  }
 
   @override
-  Future<void> deleteAppuntamento(String id) async =>
-      _appuntamentiBox?.delete(id);
+  Future<void> deleteAppuntamento(String id) async {
+    await _appuntamentiBox?.delete(id);
+    DriveSyncService.instance.segnaModifica();
+  }
 
   @override
   Future<List<TokenUsage>> getTokenUsage() async =>

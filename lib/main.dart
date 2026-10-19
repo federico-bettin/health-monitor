@@ -11,6 +11,7 @@ import 'package:salute_bettin/data/models/farmaco.dart';
 import 'package:salute_bettin/data/models/paziente.dart';
 import 'package:salute_bettin/data/models/token_usage.dart';
 import 'package:salute_bettin/data/models/visita.dart';
+import 'package:salute_bettin/data/services/drive_sync_service.dart';
 import 'package:salute_bettin/data/services/notification_service.dart';
 import 'package:salute_bettin/data/services/settings_service.dart';
 
@@ -49,6 +50,11 @@ void main() async {
   try {
     await NotificationService.instance.init();
     await NotificationService.instance.rischedulaTutti();
+  } catch (_) {}
+
+  // Sync automatico con Drive (non blocca l'avvio)
+  try {
+    await DriveSyncService.instance.init();
   } catch (_) {}
 
   runApp(const ProviderScope(child: SaluteBettinApp()));
