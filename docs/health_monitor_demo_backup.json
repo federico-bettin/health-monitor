@@ -1,181 +1,65 @@
 {
   "versione": 2,
-  "data": "2026-10-18T10:00:00.000",
-  "paziente_attivo": "mario_rossi",
+  "data": "2026-10-19T10:00:00.000",
+  "paziente_attivo": "john_smith",
   "pazienti": {
-    "mario_rossi": {
+    "john_smith": {
       "paziente": {
-        "nome": "Mario",
-        "cognome": "Rossi",
+        "nome": "John",
+        "cognome": "Smith",
         "dataNascita": "1978-03-14T00:00:00.000",
         "gruppaSanguigno": "A+",
         "codiceFiscale": null,
-        "medico": "Dr. Bianchi",
+        "medico": "Dr. Miller",
         "telefono": null,
         "email": null,
         "allergie": [],
         "patologieCroniche": [
-          "Ipertensione lieve"
+          "Mild hypertension"
         ],
-        "note": "Dati di esempio (fittizi).",
-        "updatedAt": "2026-04-02T12:00:00.000",
-        "peso": 82.0,
+        "note": "Sample data (fictional).",
+        "updatedAt": "2026-10-08T12:00:00.000",
+        "peso": 80.0,
         "altezza": 178.0,
-        "anamnesi": "Paziente di esempio per la demo dell'app.",
+        "anamnesi": "Sample patient for the app demo.",
         "fumo": false,
         "sigarette_giorno": null,
         "alcool": true,
         "bicchieri_giorno": 1,
-        "passi_giorno_manuale": 6500
+        "passi_giorno_manuale": 7500
       },
       "esami": [
         {
           "id": "demo-e1",
-          "tipo": "Emocromo",
-          "data": "2026-03-10T00:00:00.000",
+          "tipo": "Lipid Panel",
+          "data": "2024-04-09T00:00:00.000",
           "valori": [
             {
-              "nome": "Globuli bianchi",
-              "valore": "6.8",
-              "unita": "10^3/µL",
-              "riferimentoMin": "4.0",
-              "riferimentoMax": "10.0",
-              "fuoriRange": false
-            },
-            {
-              "nome": "Globuli rossi",
-              "valore": "4.9",
-              "unita": "10^6/µL",
-              "riferimentoMin": "4.5",
-              "riferimentoMax": "5.9",
-              "fuoriRange": false
-            },
-            {
-              "nome": "Emoglobina",
-              "valore": "14.8",
-              "unita": "g/dL",
-              "riferimentoMin": "13.5",
-              "riferimentoMax": "17.5",
-              "fuoriRange": false
-            },
-            {
-              "nome": "Ematocrito",
-              "valore": "44",
-              "unita": "%",
-              "riferimentoMin": "40",
-              "riferimentoMax": "52",
-              "fuoriRange": false
-            },
-            {
-              "nome": "Piastrine",
-              "valore": "245",
-              "unita": "10^3/µL",
-              "riferimentoMin": "150",
-              "riferimentoMax": "400",
-              "fuoriRange": false
-            }
-          ],
-          "laboratorio": "Laboratorio Demo",
-          "medico": "Dr. Bianchi",
-          "note": null,
-          "allegato": null,
-          "updatedAt": "2026-03-10T12:00:00.000"
-        },
-        {
-          "id": "demo-e2",
-          "tipo": "Profilo lipidico",
-          "data": "2026-03-10T00:00:00.000",
-          "valori": [
-            {
-              "nome": "Colesterolo totale",
-              "valore": "214",
+              "nome": "Total Cholesterol",
+              "valore": "221",
               "unita": "mg/dL",
               "riferimentoMin": null,
               "riferimentoMax": "200",
               "fuoriRange": true
             },
             {
-              "nome": "Colesterolo HDL",
-              "valore": "52",
+              "nome": "HDL Cholesterol",
+              "valore": "53",
               "unita": "mg/dL",
               "riferimentoMin": "40",
               "riferimentoMax": null,
               "fuoriRange": false
             },
             {
-              "nome": "Colesterolo LDL",
-              "valore": "142",
+              "nome": "LDL Cholesterol",
+              "valore": "149",
               "unita": "mg/dL",
               "riferimentoMin": null,
               "riferimentoMax": "130",
               "fuoriRange": true
             },
             {
-              "nome": "Trigliceridi",
-              "valore": "98",
-              "unita": "mg/dL",
-              "riferimentoMin": null,
-              "riferimentoMax": "150",
-              "fuoriRange": false
-            }
-          ],
-          "laboratorio": "Laboratorio Demo",
-          "medico": "Dr. Bianchi",
-          "note": null,
-          "allegato": null,
-          "updatedAt": "2026-03-10T12:00:00.000"
-        },
-        {
-          "id": "demo-e3",
-          "tipo": "Glicemia",
-          "data": "2026-03-10T00:00:00.000",
-          "valori": [
-            {
-              "nome": "Glicemia",
-              "valore": "96",
-              "unita": "mg/dL",
-              "riferimentoMin": "70",
-              "riferimentoMax": "100",
-              "fuoriRange": false
-            }
-          ],
-          "laboratorio": "Laboratorio Demo",
-          "medico": "Dr. Bianchi",
-          "note": null,
-          "allegato": null,
-          "updatedAt": "2026-03-10T12:00:00.000"
-        },
-        {
-          "id": "demo-e4",
-          "tipo": "Profilo lipidico",
-          "data": "2025-02-20T00:00:00.000",
-          "valori": [
-            {
-              "nome": "Colesterolo totale",
-              "valore": "228",
-              "unita": "mg/dL",
-              "riferimentoMin": null,
-              "riferimentoMax": "200",
-              "fuoriRange": true
-            },
-            {
-              "nome": "Colesterolo HDL",
-              "valore": "50",
-              "unita": "mg/dL",
-              "riferimentoMin": "40",
-              "riferimentoMax": null,
-              "fuoriRange": false
-            },
-            {
-              "nome": "Colesterolo LDL",
-              "valore": "155",
-              "unita": "mg/dL",
-              "riferimentoMin": null,
-              "riferimentoMax": "130",
-              "fuoriRange": true
-            },
-            {
-              "nome": "Trigliceridi",
+              "nome": "Triglycerides",
               "valore": "110",
               "unita": "mg/dL",
               "riferimentoMin": null,
@@ -183,57 +67,819 @@
               "fuoriRange": false
             }
           ],
-          "laboratorio": "Laboratorio Demo",
-          "medico": "Dr. Bianchi",
+          "laboratorio": "Demo Laboratory",
+          "medico": "Dr. Miller",
           "note": null,
           "allegato": null,
-          "updatedAt": "2025-02-20T12:00:00.000"
+          "updatedAt": "2024-04-09T12:00:00.000"
+        },
+        {
+          "id": "demo-e2",
+          "tipo": "Blood Glucose",
+          "data": "2024-04-09T00:00:00.000",
+          "valori": [
+            {
+              "nome": "Glucose",
+              "valore": "104",
+              "unita": "mg/dL",
+              "riferimentoMin": "70",
+              "riferimentoMax": "100",
+              "fuoriRange": true
+            },
+            {
+              "nome": "HbA1c",
+              "valore": "5.7",
+              "unita": "%",
+              "riferimentoMin": "4.0",
+              "riferimentoMax": "5.7",
+              "fuoriRange": false
+            }
+          ],
+          "laboratorio": "Demo Laboratory",
+          "medico": "Dr. Miller",
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2024-04-09T12:00:00.000"
+        },
+        {
+          "id": "demo-e3",
+          "tipo": "Complete Blood Count",
+          "data": "2024-04-09T00:00:00.000",
+          "valori": [
+            {
+              "nome": "WBC",
+              "valore": "6.5",
+              "unita": "10^3/µL",
+              "riferimentoMin": "4.0",
+              "riferimentoMax": "10.0",
+              "fuoriRange": false
+            },
+            {
+              "nome": "RBC",
+              "valore": "4.9",
+              "unita": "10^6/µL",
+              "riferimentoMin": "4.5",
+              "riferimentoMax": "5.9",
+              "fuoriRange": false
+            },
+            {
+              "nome": "Hemoglobin",
+              "valore": "14.6",
+              "unita": "g/dL",
+              "riferimentoMin": "13.5",
+              "riferimentoMax": "17.5",
+              "fuoriRange": false
+            },
+            {
+              "nome": "HCT",
+              "valore": "44",
+              "unita": "%",
+              "riferimentoMin": "40",
+              "riferimentoMax": "52",
+              "fuoriRange": false
+            },
+            {
+              "nome": "Platelets",
+              "valore": "245",
+              "unita": "10^3/µL",
+              "riferimentoMin": "150",
+              "riferimentoMax": "400",
+              "fuoriRange": false
+            }
+          ],
+          "laboratorio": "Demo Laboratory",
+          "medico": "Dr. Miller",
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2024-04-09T12:00:00.000"
+        },
+        {
+          "id": "demo-e4",
+          "tipo": "Lipid Panel",
+          "data": "2024-10-08T00:00:00.000",
+          "valori": [
+            {
+              "nome": "Total Cholesterol",
+              "valore": "218",
+              "unita": "mg/dL",
+              "riferimentoMin": null,
+              "riferimentoMax": "200",
+              "fuoriRange": true
+            },
+            {
+              "nome": "HDL Cholesterol",
+              "valore": "52",
+              "unita": "mg/dL",
+              "riferimentoMin": "40",
+              "riferimentoMax": null,
+              "fuoriRange": false
+            },
+            {
+              "nome": "LDL Cholesterol",
+              "valore": "146",
+              "unita": "mg/dL",
+              "riferimentoMin": null,
+              "riferimentoMax": "130",
+              "fuoriRange": true
+            },
+            {
+              "nome": "Triglycerides",
+              "valore": "104",
+              "unita": "mg/dL",
+              "riferimentoMin": null,
+              "riferimentoMax": "150",
+              "fuoriRange": false
+            }
+          ],
+          "laboratorio": "Demo Laboratory",
+          "medico": "Dr. Miller",
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2024-10-08T12:00:00.000"
         },
         {
           "id": "demo-e5",
-          "tipo": "Glicemia",
-          "data": "2025-02-20T00:00:00.000",
+          "tipo": "Blood Glucose",
+          "data": "2024-10-08T00:00:00.000",
           "valori": [
             {
-              "nome": "Glicemia",
+              "nome": "Glucose",
               "valore": "101",
               "unita": "mg/dL",
               "riferimentoMin": "70",
               "riferimentoMax": "100",
               "fuoriRange": true
+            },
+            {
+              "nome": "HbA1c",
+              "valore": "5.6",
+              "unita": "%",
+              "riferimentoMin": "4.0",
+              "riferimentoMax": "5.7",
+              "fuoriRange": false
             }
           ],
-          "laboratorio": "Laboratorio Demo",
-          "medico": "Dr. Bianchi",
+          "laboratorio": "Demo Laboratory",
+          "medico": "Dr. Miller",
           "note": null,
           "allegato": null,
-          "updatedAt": "2025-02-20T12:00:00.000"
+          "updatedAt": "2024-10-08T12:00:00.000"
+        },
+        {
+          "id": "demo-e6",
+          "tipo": "Complete Blood Count",
+          "data": "2024-10-08T00:00:00.000",
+          "valori": [
+            {
+              "nome": "WBC",
+              "valore": "6.6",
+              "unita": "10^3/µL",
+              "riferimentoMin": "4.0",
+              "riferimentoMax": "10.0",
+              "fuoriRange": false
+            },
+            {
+              "nome": "RBC",
+              "valore": "4.9",
+              "unita": "10^6/µL",
+              "riferimentoMin": "4.5",
+              "riferimentoMax": "5.9",
+              "fuoriRange": false
+            },
+            {
+              "nome": "Hemoglobin",
+              "valore": "14.8",
+              "unita": "g/dL",
+              "riferimentoMin": "13.5",
+              "riferimentoMax": "17.5",
+              "fuoriRange": false
+            },
+            {
+              "nome": "HCT",
+              "valore": "45",
+              "unita": "%",
+              "riferimentoMin": "40",
+              "riferimentoMax": "52",
+              "fuoriRange": false
+            },
+            {
+              "nome": "Platelets",
+              "valore": "242",
+              "unita": "10^3/µL",
+              "riferimentoMin": "150",
+              "riferimentoMax": "400",
+              "fuoriRange": false
+            }
+          ],
+          "laboratorio": "Demo Laboratory",
+          "medico": "Dr. Miller",
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2024-10-08T12:00:00.000"
+        },
+        {
+          "id": "demo-e7",
+          "tipo": "Lipid Panel",
+          "data": "2025-04-08T00:00:00.000",
+          "valori": [
+            {
+              "nome": "Total Cholesterol",
+              "valore": "212",
+              "unita": "mg/dL",
+              "riferimentoMin": null,
+              "riferimentoMax": "200",
+              "fuoriRange": true
+            },
+            {
+              "nome": "HDL Cholesterol",
+              "valore": "52",
+              "unita": "mg/dL",
+              "riferimentoMin": "40",
+              "riferimentoMax": null,
+              "fuoriRange": false
+            },
+            {
+              "nome": "LDL Cholesterol",
+              "valore": "141",
+              "unita": "mg/dL",
+              "riferimentoMin": null,
+              "riferimentoMax": "130",
+              "fuoriRange": true
+            },
+            {
+              "nome": "Triglycerides",
+              "valore": "101",
+              "unita": "mg/dL",
+              "riferimentoMin": null,
+              "riferimentoMax": "150",
+              "fuoriRange": false
+            }
+          ],
+          "laboratorio": "Demo Laboratory",
+          "medico": "Dr. Miller",
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2025-04-08T12:00:00.000"
+        },
+        {
+          "id": "demo-e8",
+          "tipo": "Blood Glucose",
+          "data": "2025-04-08T00:00:00.000",
+          "valori": [
+            {
+              "nome": "Glucose",
+              "valore": "98",
+              "unita": "mg/dL",
+              "riferimentoMin": "70",
+              "riferimentoMax": "100",
+              "fuoriRange": false
+            },
+            {
+              "nome": "HbA1c",
+              "valore": "5.6",
+              "unita": "%",
+              "riferimentoMin": "4.0",
+              "riferimentoMax": "5.7",
+              "fuoriRange": false
+            }
+          ],
+          "laboratorio": "Demo Laboratory",
+          "medico": "Dr. Miller",
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2025-04-08T12:00:00.000"
+        },
+        {
+          "id": "demo-e9",
+          "tipo": "Complete Blood Count",
+          "data": "2025-04-08T00:00:00.000",
+          "valori": [
+            {
+              "nome": "WBC",
+              "valore": "6.7",
+              "unita": "10^3/µL",
+              "riferimentoMin": "4.0",
+              "riferimentoMax": "10.0",
+              "fuoriRange": false
+            },
+            {
+              "nome": "RBC",
+              "valore": "4.9",
+              "unita": "10^6/µL",
+              "riferimentoMin": "4.5",
+              "riferimentoMax": "5.9",
+              "fuoriRange": false
+            },
+            {
+              "nome": "Hemoglobin",
+              "valore": "14.5",
+              "unita": "g/dL",
+              "riferimentoMin": "13.5",
+              "riferimentoMax": "17.5",
+              "fuoriRange": false
+            },
+            {
+              "nome": "HCT",
+              "valore": "44",
+              "unita": "%",
+              "riferimentoMin": "40",
+              "riferimentoMax": "52",
+              "fuoriRange": false
+            },
+            {
+              "nome": "Platelets",
+              "valore": "239",
+              "unita": "10^3/µL",
+              "riferimentoMin": "150",
+              "riferimentoMax": "400",
+              "fuoriRange": false
+            }
+          ],
+          "laboratorio": "Demo Laboratory",
+          "medico": "Dr. Miller",
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2025-04-08T12:00:00.000"
+        },
+        {
+          "id": "demo-e10",
+          "tipo": "Lipid Panel",
+          "data": "2025-10-07T00:00:00.000",
+          "valori": [
+            {
+              "nome": "Total Cholesterol",
+              "valore": "206",
+              "unita": "mg/dL",
+              "riferimentoMin": null,
+              "riferimentoMax": "200",
+              "fuoriRange": true
+            },
+            {
+              "nome": "HDL Cholesterol",
+              "valore": "54",
+              "unita": "mg/dL",
+              "riferimentoMin": "40",
+              "riferimentoMax": null,
+              "fuoriRange": false
+            },
+            {
+              "nome": "LDL Cholesterol",
+              "valore": "135",
+              "unita": "mg/dL",
+              "riferimentoMin": null,
+              "riferimentoMax": "130",
+              "fuoriRange": true
+            },
+            {
+              "nome": "Triglycerides",
+              "valore": "98",
+              "unita": "mg/dL",
+              "riferimentoMin": null,
+              "riferimentoMax": "150",
+              "fuoriRange": false
+            }
+          ],
+          "laboratorio": "Demo Laboratory",
+          "medico": "Dr. Miller",
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2025-10-07T12:00:00.000"
+        },
+        {
+          "id": "demo-e11",
+          "tipo": "Blood Glucose",
+          "data": "2025-10-07T00:00:00.000",
+          "valori": [
+            {
+              "nome": "Glucose",
+              "valore": "97",
+              "unita": "mg/dL",
+              "riferimentoMin": "70",
+              "riferimentoMax": "100",
+              "fuoriRange": false
+            },
+            {
+              "nome": "HbA1c",
+              "valore": "5.5",
+              "unita": "%",
+              "riferimentoMin": "4.0",
+              "riferimentoMax": "5.7",
+              "fuoriRange": false
+            }
+          ],
+          "laboratorio": "Demo Laboratory",
+          "medico": "Dr. Miller",
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2025-10-07T12:00:00.000"
+        },
+        {
+          "id": "demo-e12",
+          "tipo": "Complete Blood Count",
+          "data": "2025-10-07T00:00:00.000",
+          "valori": [
+            {
+              "nome": "WBC",
+              "valore": "6.8",
+              "unita": "10^3/µL",
+              "riferimentoMin": "4.0",
+              "riferimentoMax": "10.0",
+              "fuoriRange": false
+            },
+            {
+              "nome": "RBC",
+              "valore": "4.9",
+              "unita": "10^6/µL",
+              "riferimentoMin": "4.5",
+              "riferimentoMax": "5.9",
+              "fuoriRange": false
+            },
+            {
+              "nome": "Hemoglobin",
+              "valore": "15.0",
+              "unita": "g/dL",
+              "riferimentoMin": "13.5",
+              "riferimentoMax": "17.5",
+              "fuoriRange": false
+            },
+            {
+              "nome": "HCT",
+              "valore": "45",
+              "unita": "%",
+              "riferimentoMin": "40",
+              "riferimentoMax": "52",
+              "fuoriRange": false
+            },
+            {
+              "nome": "Platelets",
+              "valore": "236",
+              "unita": "10^3/µL",
+              "riferimentoMin": "150",
+              "riferimentoMax": "400",
+              "fuoriRange": false
+            }
+          ],
+          "laboratorio": "Demo Laboratory",
+          "medico": "Dr. Miller",
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2025-10-07T12:00:00.000"
+        },
+        {
+          "id": "demo-e13",
+          "tipo": "Lipid Panel",
+          "data": "2026-04-07T00:00:00.000",
+          "valori": [
+            {
+              "nome": "Total Cholesterol",
+              "valore": "198",
+              "unita": "mg/dL",
+              "riferimentoMin": null,
+              "riferimentoMax": "200",
+              "fuoriRange": false
+            },
+            {
+              "nome": "HDL Cholesterol",
+              "valore": "55",
+              "unita": "mg/dL",
+              "riferimentoMin": "40",
+              "riferimentoMax": null,
+              "fuoriRange": false
+            },
+            {
+              "nome": "LDL Cholesterol",
+              "valore": "128",
+              "unita": "mg/dL",
+              "riferimentoMin": null,
+              "riferimentoMax": "130",
+              "fuoriRange": false
+            },
+            {
+              "nome": "Triglycerides",
+              "valore": "96",
+              "unita": "mg/dL",
+              "riferimentoMin": null,
+              "riferimentoMax": "150",
+              "fuoriRange": false
+            }
+          ],
+          "laboratorio": "Demo Laboratory",
+          "medico": "Dr. Miller",
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2026-04-07T12:00:00.000"
+        },
+        {
+          "id": "demo-e14",
+          "tipo": "Blood Glucose",
+          "data": "2026-04-07T00:00:00.000",
+          "valori": [
+            {
+              "nome": "Glucose",
+              "valore": "94",
+              "unita": "mg/dL",
+              "riferimentoMin": "70",
+              "riferimentoMax": "100",
+              "fuoriRange": false
+            },
+            {
+              "nome": "HbA1c",
+              "valore": "5.4",
+              "unita": "%",
+              "riferimentoMin": "4.0",
+              "riferimentoMax": "5.7",
+              "fuoriRange": false
+            }
+          ],
+          "laboratorio": "Demo Laboratory",
+          "medico": "Dr. Miller",
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2026-04-07T12:00:00.000"
+        },
+        {
+          "id": "demo-e15",
+          "tipo": "Complete Blood Count",
+          "data": "2026-04-07T00:00:00.000",
+          "valori": [
+            {
+              "nome": "WBC",
+              "valore": "6.9",
+              "unita": "10^3/µL",
+              "riferimentoMin": "4.0",
+              "riferimentoMax": "10.0",
+              "fuoriRange": false
+            },
+            {
+              "nome": "RBC",
+              "valore": "4.9",
+              "unita": "10^6/µL",
+              "riferimentoMin": "4.5",
+              "riferimentoMax": "5.9",
+              "fuoriRange": false
+            },
+            {
+              "nome": "Hemoglobin",
+              "valore": "14.9",
+              "unita": "g/dL",
+              "riferimentoMin": "13.5",
+              "riferimentoMax": "17.5",
+              "fuoriRange": false
+            },
+            {
+              "nome": "HCT",
+              "valore": "44",
+              "unita": "%",
+              "riferimentoMin": "40",
+              "riferimentoMax": "52",
+              "fuoriRange": false
+            },
+            {
+              "nome": "Platelets",
+              "valore": "233",
+              "unita": "10^3/µL",
+              "riferimentoMin": "150",
+              "riferimentoMax": "400",
+              "fuoriRange": false
+            }
+          ],
+          "laboratorio": "Demo Laboratory",
+          "medico": "Dr. Miller",
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2026-04-07T12:00:00.000"
+        },
+        {
+          "id": "demo-e16",
+          "tipo": "Lipid Panel",
+          "data": "2026-10-06T00:00:00.000",
+          "valori": [
+            {
+              "nome": "Total Cholesterol",
+              "valore": "189",
+              "unita": "mg/dL",
+              "riferimentoMin": null,
+              "riferimentoMax": "200",
+              "fuoriRange": false
+            },
+            {
+              "nome": "HDL Cholesterol",
+              "valore": "57",
+              "unita": "mg/dL",
+              "riferimentoMin": "40",
+              "riferimentoMax": null,
+              "fuoriRange": false
+            },
+            {
+              "nome": "LDL Cholesterol",
+              "valore": "121",
+              "unita": "mg/dL",
+              "riferimentoMin": null,
+              "riferimentoMax": "130",
+              "fuoriRange": false
+            },
+            {
+              "nome": "Triglycerides",
+              "valore": "92",
+              "unita": "mg/dL",
+              "riferimentoMin": null,
+              "riferimentoMax": "150",
+              "fuoriRange": false
+            }
+          ],
+          "laboratorio": "Demo Laboratory",
+          "medico": "Dr. Miller",
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2026-10-06T12:00:00.000"
+        },
+        {
+          "id": "demo-e17",
+          "tipo": "Blood Glucose",
+          "data": "2026-10-06T00:00:00.000",
+          "valori": [
+            {
+              "nome": "Glucose",
+              "valore": "93",
+              "unita": "mg/dL",
+              "riferimentoMin": "70",
+              "riferimentoMax": "100",
+              "fuoriRange": false
+            },
+            {
+              "nome": "HbA1c",
+              "valore": "5.4",
+              "unita": "%",
+              "riferimentoMin": "4.0",
+              "riferimentoMax": "5.7",
+              "fuoriRange": false
+            }
+          ],
+          "laboratorio": "Demo Laboratory",
+          "medico": "Dr. Miller",
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2026-10-06T12:00:00.000"
+        },
+        {
+          "id": "demo-e18",
+          "tipo": "Complete Blood Count",
+          "data": "2026-10-06T00:00:00.000",
+          "valori": [
+            {
+              "nome": "WBC",
+              "valore": "7.0",
+              "unita": "10^3/µL",
+              "riferimentoMin": "4.0",
+              "riferimentoMax": "10.0",
+              "fuoriRange": false
+            },
+            {
+              "nome": "RBC",
+              "valore": "4.9",
+              "unita": "10^6/µL",
+              "riferimentoMin": "4.5",
+              "riferimentoMax": "5.9",
+              "fuoriRange": false
+            },
+            {
+              "nome": "Hemoglobin",
+              "valore": "15.1",
+              "unita": "g/dL",
+              "riferimentoMin": "13.5",
+              "riferimentoMax": "17.5",
+              "fuoriRange": false
+            },
+            {
+              "nome": "HCT",
+              "valore": "45",
+              "unita": "%",
+              "riferimentoMin": "40",
+              "riferimentoMax": "52",
+              "fuoriRange": false
+            },
+            {
+              "nome": "Platelets",
+              "valore": "230",
+              "unita": "10^3/µL",
+              "riferimentoMin": "150",
+              "riferimentoMax": "400",
+              "fuoriRange": false
+            }
+          ],
+          "laboratorio": "Demo Laboratory",
+          "medico": "Dr. Miller",
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2026-10-06T12:00:00.000"
+        },
+        {
+          "id": "demo-e19",
+          "tipo": "Kidney Function",
+          "data": "2026-10-06T00:00:00.000",
+          "valori": [
+            {
+              "nome": "Creatinine",
+              "valore": "0.96",
+              "unita": "mg/dL",
+              "riferimentoMin": "0.70",
+              "riferimentoMax": "1.20",
+              "fuoriRange": false
+            },
+            {
+              "nome": "eGFR",
+              "valore": "92",
+              "unita": "mL/min/1.73m²",
+              "riferimentoMin": "90",
+              "riferimentoMax": null,
+              "fuoriRange": false
+            }
+          ],
+          "laboratorio": "Demo Laboratory",
+          "medico": "Dr. Miller",
+          "note": "Kidney function within normal limits.",
+          "allegato": null,
+          "updatedAt": "2026-10-06T12:00:00.000"
+        },
+        {
+          "id": "demo-e20",
+          "tipo": "Vitamin D and Iron",
+          "data": "2026-10-06T00:00:00.000",
+          "valori": [
+            {
+              "nome": "Vitamin D (25-OH-D3)",
+              "valore": "22",
+              "unita": "ng/mL",
+              "riferimentoMin": "30",
+              "riferimentoMax": "100",
+              "fuoriRange": true
+            },
+            {
+              "nome": "Ferritin",
+              "valore": "96",
+              "unita": "ng/mL",
+              "riferimentoMin": "30",
+              "riferimentoMax": "400",
+              "fuoriRange": false
+            }
+          ],
+          "laboratorio": "Demo Laboratory",
+          "medico": "Dr. Miller",
+          "note": "Vitamin D deficiency: supplementation started.",
+          "allegato": null,
+          "updatedAt": "2026-10-06T12:00:00.000"
         }
       ],
       "visite": [
         {
+          "id": "demo-v4",
+          "specialita": "Urology",
+          "data": "2026-06-18T00:00:00.000",
+          "medico": "Dr. White",
+          "struttura": "Demo Hospital",
+          "diagnosi": "Routine check-up within normal limits.",
+          "terapia": "None",
+          "farmaciPrescritti": [],
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2026-06-18T12:00:00.000"
+        },
+        {
           "id": "demo-v1",
-          "specialita": "Cardiologia",
+          "specialita": "Cardiology",
           "data": "2026-04-02T00:00:00.000",
-          "medico": "Dr. Verdi",
-          "struttura": "Ospedale Demo",
-          "diagnosi": "Ipertensione lieve. Controllo tra 12 mesi.",
-          "terapia": "Ramipril 5 mg al mattino",
+          "medico": "Dr. Green",
+          "struttura": "Demo Hospital",
+          "diagnosi": "Mild hypertension, well controlled. Follow-up in 12 months.",
+          "terapia": "Ramipril 5 mg in the morning",
           "farmaciPrescritti": [
             "Ramipril 5 mg"
           ],
-          "note": null,
+          "note": "Blood pressure 128/82 mmHg.",
           "allegato": null,
           "updatedAt": "2026-04-02T12:00:00.000"
         },
         {
+          "id": "demo-v3",
+          "specialita": "Ophthalmology",
+          "data": "2025-11-10T00:00:00.000",
+          "medico": "Dr. Young",
+          "struttura": "Demo Clinic",
+          "diagnosi": "Mild presbyopia.",
+          "terapia": "Reading glasses +1.00",
+          "farmaciPrescritti": [],
+          "note": null,
+          "allegato": null,
+          "updatedAt": "2025-11-10T12:00:00.000"
+        },
+        {
           "id": "demo-v2",
-          "specialita": "Dermatologia",
+          "specialita": "Dermatology",
           "data": "2025-05-15T00:00:00.000",
-          "medico": "Dr.ssa Neri",
-          "struttura": "Studio Demo",
-          "diagnosi": "Controllo nevi: nessuna alterazione.",
-          "terapia": null,
+          "medico": "Dr. Brown",
+          "struttura": "Demo Clinic",
+          "diagnosi": "Moles stable, no suspicious lesions.",
+          "terapia": "High-SPF sunscreen in summer",
           "farmaciPrescritti": [],
           "note": null,
           "allegato": null,
@@ -246,141 +892,202 @@
           "nome": "Ramipril",
           "principioAttivo": "Ramipril",
           "dosaggio": "5 mg",
-          "frequenza": "1 volta al giorno",
+          "frequenza": "Once daily",
           "dataInizio": "2026-04-02T00:00:00.000",
           "dataFine": null,
           "attivo": true,
-          "medico": "Dr. Verdi",
+          "medico": "Dr. Green",
           "note": null,
           "orariAssunzione": [
             "08:00"
           ],
           "updatedAt": "2026-04-02T12:00:00.000"
+        },
+        {
+          "id": "demo-f2",
+          "nome": "Vitamina D3",
+          "principioAttivo": "Cholecalciferol",
+          "dosaggio": "2000 IU",
+          "frequenza": "Once daily",
+          "dataInizio": "2026-10-08T00:00:00.000",
+          "dataFine": null,
+          "attivo": true,
+          "medico": "Dr. Miller",
+          "note": "After breakfast",
+          "orariAssunzione": [
+            "08:30"
+          ],
+          "updatedAt": "2026-10-08T12:00:00.000"
         }
       ],
       "appuntamenti": [
         {
           "id": "demo-a1",
-          "titolo": "Esami del sangue",
-          "data": "2025-02-20T00:00:00.000",
+          "titolo": "Blood tests",
+          "data": "2025-04-08T00:00:00.000",
           "ora": "08:00",
           "tipo": "esame",
-          "medico": "Dr. Bianchi",
-          "struttura": "Laboratorio Demo",
+          "medico": "Dr. Miller",
+          "struttura": "Demo Laboratory",
           "indirizzo": null,
           "note": null,
           "completato": true,
-          "promemoria": true,
-          "updatedAt": "2025-02-20T12:00:00.000",
+          "promemoria": false,
+          "updatedAt": "2025-04-08T12:00:00.000",
           "costo": 38.5
         },
         {
           "id": "demo-a2",
-          "titolo": "Visita dermatologica",
+          "titolo": "Dermatology visit",
           "data": "2025-05-15T00:00:00.000",
           "ora": "16:30",
           "tipo": "visita",
-          "medico": "Dr.ssa Neri",
-          "struttura": "Studio Demo",
+          "medico": "Dr. Brown",
+          "struttura": "Demo Clinic",
           "indirizzo": null,
           "note": null,
           "completato": true,
-          "promemoria": true,
+          "promemoria": false,
           "updatedAt": "2025-05-15T12:00:00.000",
           "costo": 120.0
         },
         {
           "id": "demo-a3",
-          "titolo": "Ecografia addome",
-          "data": "2025-11-08T00:00:00.000",
-          "ora": "10:15",
+          "titolo": "Blood tests",
+          "data": "2025-10-07T00:00:00.000",
+          "ora": "08:00",
           "tipo": "esame",
-          "medico": "Dr. Gialli",
-          "struttura": "Centro Diagnostico Demo",
+          "medico": "Dr. Miller",
+          "struttura": "Demo Laboratory",
           "indirizzo": null,
           "note": null,
           "completato": true,
-          "promemoria": true,
-          "updatedAt": "2025-11-08T12:00:00.000",
-          "costo": 95.0
+          "promemoria": false,
+          "updatedAt": "2025-10-07T12:00:00.000",
+          "costo": 41.0
         },
         {
           "id": "demo-a4",
-          "titolo": "Esami del sangue",
-          "data": "2026-03-10T00:00:00.000",
-          "ora": "08:00",
-          "tipo": "esame",
-          "medico": "Dr. Bianchi",
-          "struttura": "Laboratorio Demo",
+          "titolo": "Eye exam",
+          "data": "2025-11-10T00:00:00.000",
+          "ora": "15:00",
+          "tipo": "visita",
+          "medico": "Dr. Young",
+          "struttura": "Demo Clinic",
           "indirizzo": null,
           "note": null,
           "completato": true,
-          "promemoria": true,
-          "updatedAt": "2026-03-10T12:00:00.000",
-          "costo": 42.0
+          "promemoria": false,
+          "updatedAt": "2025-11-10T12:00:00.000",
+          "costo": 95.0
         },
         {
           "id": "demo-a5",
-          "titolo": "Visita cardiologica",
+          "titolo": "Cardiology visit",
           "data": "2026-04-02T00:00:00.000",
-          "ora": "09:30",
+          "ora": "10:30",
           "tipo": "visita",
-          "medico": "Dr. Verdi",
-          "struttura": "Ospedale Demo",
+          "medico": "Dr. Green",
+          "struttura": "Demo Hospital",
           "indirizzo": null,
           "note": null,
           "completato": true,
-          "promemoria": true,
-          "updatedAt": "2026-04-02T12:00:00.000",
-          "costo": 150.0
-        },
-        {
-          "id": "demo-a6",
-          "titolo": "Elettrocardiogramma",
-          "data": "2026-04-02T00:00:00.000",
-          "ora": "10:00",
-          "tipo": "esame",
-          "medico": "Dr. Verdi",
-          "struttura": "Ospedale Demo",
-          "indirizzo": null,
-          "note": null,
-          "completato": true,
-          "promemoria": true,
+          "promemoria": false,
           "updatedAt": "2026-04-02T12:00:00.000",
           "costo": 60.0
         },
         {
-          "id": "demo-a7",
-          "titolo": "Controllo colesterolo",
-          "data": "2026-11-20T00:00:00.000",
-          "ora": "08:30",
+          "id": "demo-a6",
+          "titolo": "Blood tests",
+          "data": "2026-10-06T00:00:00.000",
+          "ora": "08:00",
           "tipo": "esame",
-          "medico": "Dr. Bianchi",
-          "struttura": "Laboratorio Demo",
+          "medico": "Dr. Miller",
+          "struttura": "Demo Laboratory",
           "indirizzo": null,
           "note": null,
-          "completato": false,
-          "promemoria": true,
-          "updatedAt": "2026-11-20T12:00:00.000",
-          "costo": null
+          "completato": true,
+          "promemoria": false,
+          "updatedAt": "2026-10-06T12:00:00.000",
+          "costo": 44.0
+        },
+        {
+          "id": "demo-a7",
+          "titolo": "Urology visit",
+          "data": "2026-06-18T00:00:00.000",
+          "ora": "11:00",
+          "tipo": "visita",
+          "medico": "Dr. White",
+          "struttura": "Demo Hospital",
+          "indirizzo": null,
+          "note": null,
+          "completato": true,
+          "promemoria": false,
+          "updatedAt": "2026-06-18T12:00:00.000",
+          "costo": 110.0
         },
         {
           "id": "demo-a8",
-          "titolo": "Visita oculistica",
-          "data": "2026-12-05T00:00:00.000",
-          "ora": "15:00",
+          "titolo": "Eye exam",
+          "data": "2026-10-22T00:00:00.000",
+          "ora": "15:30",
           "tipo": "visita",
-          "medico": "Dr. Blu",
-          "struttura": "Studio Demo",
+          "medico": "Dr. Young",
+          "struttura": "Demo Clinic",
           "indirizzo": null,
           "note": null,
           "completato": false,
           "promemoria": true,
-          "updatedAt": "2026-12-05T12:00:00.000",
-          "costo": null
+          "updatedAt": "2026-10-22T12:00:00.000",
+          "costo": 95.0
+        },
+        {
+          "id": "demo-a9",
+          "titolo": "Dermatology visit",
+          "data": "2026-11-12T00:00:00.000",
+          "ora": "16:00",
+          "tipo": "visita",
+          "medico": "Dr. Brown",
+          "struttura": "Demo Clinic",
+          "indirizzo": null,
+          "note": null,
+          "completato": false,
+          "promemoria": true,
+          "updatedAt": "2026-11-12T12:00:00.000",
+          "costo": 120.0
+        },
+        {
+          "id": "demo-a10",
+          "titolo": "Blood tests",
+          "data": "2027-04-06T00:00:00.000",
+          "ora": "08:00",
+          "tipo": "esame",
+          "medico": "Dr. Miller",
+          "struttura": "Demo Laboratory",
+          "indirizzo": null,
+          "note": null,
+          "completato": false,
+          "promemoria": true,
+          "updatedAt": "2027-04-06T12:00:00.000",
+          "costo": 45.0
+        },
+        {
+          "id": "demo-a11",
+          "titolo": "Cardiology visit",
+          "data": "2026-12-03T00:00:00.000",
+          "ora": "10:00",
+          "tipo": "visita",
+          "medico": "Dr. Green",
+          "struttura": "Demo Hospital",
+          "indirizzo": null,
+          "note": null,
+          "completato": false,
+          "promemoria": true,
+          "updatedAt": "2026-12-03T12:00:00.000",
+          "costo": 60.0
         }
       ],
-      "exportedAt": "2026-10-18T10:00:00.000"
+      "exportedAt": "2026-10-19T10:00:00.000"
     }
   }
 }
