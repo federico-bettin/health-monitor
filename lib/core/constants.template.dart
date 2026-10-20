@@ -1,4 +1,4 @@
-// ⚠️  SETUP REQUIRED
+﻿// âš ï¸  SETUP REQUIRED
 //
 // 1. Copy this file to lib/core/constants.dart
 // 2. Add your Anthropic API key below
@@ -9,8 +9,8 @@
 class AppConstants {
   AppConstants._();
 
-  // ─── Anthropic ───────────────────────────────────────────────
-  // 👇 Replace with your actual API key
+  // â”€â”€â”€ Anthropic â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ðŸ‘‡ Replace with your actual API key
   static const String anthropicApiKey = 'YOUR_ANTHROPIC_API_KEY_HERE';
 
   static const String anthropicModelDefault = 'claude-sonnet-4-6';
@@ -19,20 +19,20 @@ class AppConstants {
   static const Map<String, String> aiModelli = {
     'claude-haiku-4-5-20251001': 'Haiku 4.5  (veloce, economico)',
     'claude-sonnet-4-6':         'Sonnet 4.6 (bilanciato)',
-    'claude-opus-4-6':           'Opus 4.6   (più capace)',
+    'claude-opus-4-6':           'Opus 4.6   (piÃ¹ capace)',
   };
 
-  // ─── App ─────────────────────────────────────────────────────
+  // â”€â”€â”€ App â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   static const String appName = 'Health Monitor';
   static const String appVersion = '1.0.0';
 
-  // ─── Google Drive ────────────────────────────────────────────
+  // â”€â”€â”€ Google Drive â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   static const String driveFolderName    = 'HealthMonitor';
   static const String driveDataFile      = 'data.json';
   static const String driveMetaFile      = 'sync_metadata.json';
   static const String driveRefertiFolder = 'referti';
 
-  // ─── SharedPreferences keys ──────────────────────────────────
+  // â”€â”€â”€ SharedPreferences keys â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   static const String prefStorageMode      = 'storage_mode';
   static const String prefLanguageCode     = 'language_code';
   static const String prefBiometricEnabled = 'biometric_enabled';
@@ -47,12 +47,12 @@ class AppConstants {
   static const String prefFotoProfilo      = 'foto_profilo';
   static const String prefStepSource       = 'step_source';
 
-  // ─── Storage modes ───────────────────────────────────────────
+  // â”€â”€â”€ Storage modes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   static const String storageModeLocal = 'local';
   static const String storageModeDrive = 'drive';
   static const String storageModeSync  = 'sync';
 
-  // ─── Hive box names ──────────────────────────────────────────
+  // â”€â”€â”€ Hive box names â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   static const String boxPaziente     = 'paziente';
   static const String boxEsami        = 'esami';
   static const String boxVisite       = 'visite';
@@ -61,7 +61,7 @@ class AppConstants {
   static const String boxConflitti    = 'conflitti';
   static const String boxTokenUsage   = 'token_usage';
 
-  // ─── Hive type IDs ───────────────────────────────────────────
+  // â”€â”€â”€ Hive type IDs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   static const int hiveTypePaziente     = 0;
   static const int hiveTypeEsame        = 1;
   static const int hiveTypeVisita       = 2;
@@ -70,8 +70,14 @@ class AppConstants {
   static const int hiveTypeConflitto    = 5;
   static const int hiveTypeTokenUsage   = 6;
 
-  // ─── UI ──────────────────────────────────────────────────────
+  // â”€â”€â”€ UI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   static const double borderRadius  = 12.0;
   static const double cardElevation = 2.0;
   static const double pagePadding   = 16.0;
+
+  static const String langItaliano = 'it';
+  static const String langEnglish = 'en';
+  static const String langDefault = 'it';
+  static const Duration syncInterval = Duration(minutes: 15);
+  static const Duration syncTimeout = Duration(seconds: 30);
 }
