@@ -1,3 +1,5 @@
+🇮🇹 [Leggi in italiano](README.it.md)
+
 # Health Monitor
 
 A personal health-tracking app built with **Flutter** (Android first, Windows supported).
@@ -23,6 +25,47 @@ All screenshots use fictional demo data (see [Demo data](#demo-data)).
 |:--:|:--:|
 | <img src="docs/screenshots/statistiche.png" width="240"> | <img src="docs/screenshots/impostazioni.png" width="240"> |
 | Visits, exams and spending per year | Language, security, reminders, storage and backup |
+
+## Download
+
+No build tools needed: grab the latest **APK** from the
+[Releases page](https://github.com/federico-bettin/health-monitor/releases/latest) and install it on an Android phone (Android 8.0+).
+
+1. On the phone, open the release page and download `HealthMonitor-x.y.z.apk`.
+2. Open the downloaded file. If Android asks, allow installing apps from this source (browser or Files app) for this one time.
+3. Open **Health Monitor** and create your profile. Everything works right away, with no account and no key.
+4. *(Optional)* To turn on the AI features, add your own Anthropic API key in **Settings → Claude API key** (see below).
+
+> The APK is built from this repository and contains **no API keys**. Your data stays on your phone.
+> Because it is not distributed through Google Play, Android may show a warning when installing: that is expected for apps installed from a file.
+
+## With and without an API key
+
+The app is fully usable **without any key**, including the Health Score. A personal Anthropic API key adds the AI features on top.
+
+| Feature | Without key | With your own key |
+|---|:--:|:--:|
+| Exams, visits, medications, appointments (manual entry) | ✅ | ✅ |
+| Charts, reference ranges, statistics and costs | ✅ | ✅ |
+| Calendar and reminders | ✅ | ✅ |
+| Wearable data via Health Connect | ✅ | ✅ |
+| Attach PDF / photo of the original report | ✅ | ✅ |
+| Multiple profiles, biometric lock, Italian / English UI | ✅ | ✅ |
+| Manual backup and restore | ✅ | ✅ |
+| **Health Score** (deterministic, with strengths, areas of attention and improvements) | ✅ | ✅ |
+| AI explanation, **comparison with the Italian average** and suggested exams | ❌ | ✅ |
+| **Automatic import of PDF / photo reports** (values, diagnosis, therapy) | ❌ | ✅ |
+| Translation of saved exam / visit texts | ❌ | ✅ |
+
+**How to get a key:** create an account at <https://console.anthropic.com>, add a few dollars of credit,
+set a monthly spending limit, create an API key and paste it in **Settings → Claude API key**.
+Usage is billed to your own Anthropic account (a few cents per operation with the default Haiku model);
+the **Token usage** screen in Settings shows what each operation used.
+
+The key is stored only on your phone and is sent only to Anthropic. You can remove it at any time.
+
+> **Google Drive sync:** the automatic Drive sync uses the author's Google Cloud project, so it is only available when you build the app with
+> your own `google-services.json` (see [Getting started](#getting-started)). In the downloadable APK, use the manual backup and restore instead.
 
 ## Features
 
@@ -52,10 +95,11 @@ All screenshots use fictional demo data (see [Demo data](#demo-data)).
 - Claude reads the document and fills in the exam or visit form: type, date, values with units and reference ranges, diagnosis, therapy, laboratory and an interpretation. You review and confirm before saving.
 
 ### Health score
-- Computed from age, BMI, lifestyle (smoking, alcohol, daily steps), the **latest result per exam type**, the **latest visit per specialty**, chronic conditions and sleep.
-- Uses a **fixed scoring rubric** (the score starts at 10 and fixed penalties apply), so the same data gives the same score.
+- A **deterministic score (1–10)** computed by the app itself from age, BMI, lifestyle (smoking, alcohol, daily steps), the **latest result per exam type**, chronic conditions and sleep. It starts at 10 and applies a fixed rubric of penalties, so **the same data always gives the same score**, with no AI and no network involved. The rubric is covered by unit tests.
+- **Without an API key** the app also writes the explanation itself: strengths, areas of attention and three suggested improvements, each with the actual values behind it.
+- **With your own API key**, Claude adds a natural-language summary, a **comparison with the Italian average** for the patient's age group and suggested exams. The AI never changes the number: it only explains it.
 - Refreshed **automatically** when an exam or a visit is saved, **manually** with the refresh button, and never just because wearable data changed.
-- When you switch language, the existing score is **translated**, not recalculated.
+- When you switch language, an existing AI explanation is **translated**, not recalculated.
 
 ### Wearables (Health Connect)
 - Reads weight, body fat, lean mass, body water, heart rate, steps, sleep (deep / REM) and active calories.
@@ -85,6 +129,7 @@ All screenshots use fictional demo data (see [Demo data](#demo-data)).
 
 ### AI model and usage
 - Choose the Claude model in Settings: **Haiku 4.5** (default, cheapest), **Sonnet 4.6** or **Opus 4.6**, with a cost badge on each.
+- **Your own API key**, entered in Settings (the app works without one, minus the AI features).
 - **Token usage** screen: input and output tokens and estimated cost, for every AI operation.
 
 ### Languages
@@ -135,8 +180,9 @@ Requirements: Flutter SDK, Android SDK (minSdk 26), an Android device or emulato
    ```bash
    cp lib/core/constants.template.dart lib/core/constants.dart
    ```
-   Open `lib/core/constants.dart` and set your own Anthropic API key
-   (<https://console.anthropic.com>). **Never commit this file.**
+   Optionally put your own Anthropic API key in `lib/core/constants.dart`
+   (<https://console.anthropic.com>), or leave the placeholder and enter the key
+   later in the app (**Settings -> Claude API key**). **Never commit `constants.dart`.**
 3. *(Only for Google Drive features)* create a Google Cloud / Firebase project, enable the
    Drive API, register an Android OAuth client for the package name and your debug SHA-1, and
    place `google-services.json` in `android/app/` (also git-ignored). If you fork the project,
@@ -154,9 +200,15 @@ Release build: `flutter build apk --release`.
 
 ### A note on the API key
 
-The key lives in `constants.dart` and is compiled into the app, so it can be extracted from
-an APK. This is fine for personal use. A public distribution should have each user enter
-their own key, or route calls through a backend that holds it.
+A key entered in the app is stored in the app's private storage on the phone and sent only to
+Anthropic. A key compiled into `constants.dart` ends up inside the APK and can be extracted from it,
+so never share an APK built with your own key.
+
+### Building the public APK (maintainers)
+
+`scripts/build_public_apk.ps1` (PowerShell) builds the release APK with the placeholder configuration
+instead of your `constants.dart`, restores your file afterwards, checks that no Anthropic key ended up in the APK
+and writes `release/HealthMonitor-<version>.apk`, ready to attach to a GitHub Release.
 
 ## Demo data
 
@@ -174,7 +226,6 @@ Restoring **replaces** the data currently in the app, so use a test device or ma
 
 ## Roadmap
 
-- Per-user API key entry in Settings
 - Per-record merge for multi-device sync
 - Export of yearly statistics
 - More languages
