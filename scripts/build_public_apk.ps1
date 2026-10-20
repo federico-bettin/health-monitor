@@ -1,4 +1,4 @@
-<#
+﻿<#
   Costruisce l'APK pubblico (da mettere nelle GitHub Releases) SENZA la tua
   chiave Anthropic: usa temporaneamente constants.template.dart al posto di
   lib/core/constants.dart, poi ripristina il tuo file originale.
@@ -15,7 +15,7 @@ $template  = Join-Path $root 'lib\core\constants.template.dart'
 $backup    = Join-Path $root 'lib\core\constants.dart.mio'
 
 if (-not (Test-Path $template)) { throw "Manca $template" }
-if (Test-Path $backup) { throw "Esiste gia' $backup: un build precedente e' stato interrotto. Ripristina a mano constants.dart da quel file e riprova." }
+if (Test-Path $backup) { throw "Esiste gia' ${backup}: un build precedente e' stato interrotto. Ripristina a mano constants.dart da quel file e riprova." }
 
 $hadConstants = Test-Path $constants
 if ($hadConstants) { Copy-Item $constants $backup }
@@ -63,3 +63,4 @@ New-Item -ItemType Directory -Force (Join-Path $root 'release') | Out-Null
 $out = Join-Path $root "release\HealthMonitor-$ver.apk"
 Copy-Item $apk $out -Force
 Write-Host ">> Pronto: $out" -ForegroundColor Green
+
