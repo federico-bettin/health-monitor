@@ -185,4 +185,4 @@ MIT - see [LICENSE](LICENSE).
 
 ## Author
 
-Federico Bettin - software engineer (embedded, industrial automation, safety-critical systems).
+Federico Bettin - system & software engineer (embedded, industrial automation, safety-critical systems).
