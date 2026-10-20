@@ -12,6 +12,20 @@ e calcolare un punteggio di salute spiegabile.
 
 L'interfaccia è in **italiano 🇮🇹 e inglese 🇬🇧**, selezionabile in ogni momento da Impostazioni.
 
+## 🖼️ Screenshot
+
+Tutti gli screenshot usano dati demo di fantasia (paziente "John Smith") e mostrano l'interfaccia in inglese; l'app è disponibile anche in italiano.
+
+| Dashboard | Esami | Calendario |
+| --- | --- | --- |
+| [![](docs/screenshots/dashboard.png)](docs/screenshots/dashboard.png) | [![](docs/screenshots/esami.png)](docs/screenshots/esami.png) | [![](docs/screenshots/calendario.png)](docs/screenshots/calendario.png) |
+| Punteggio di salute, dati wearable e andamento esami | Esami dal più recente, con segnalazione dei valori fuori range | Appuntamenti con costi e promemoria |
+
+| Statistiche | Impostazioni |
+| --- | --- |
+| [![](docs/screenshots/statistiche.png)](docs/screenshots/statistiche.png) | [![](docs/screenshots/impostazioni.png)](docs/screenshots/impostazioni.png) |
+| Visite, esami e spese per anno | Lingua, sicurezza, promemoria, archiviazione e backup |
+
 ## 📱 Installare l'app (senza compilare nulla)
 
 Serve un telefono **Android 8.0 o superiore**.
