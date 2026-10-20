@@ -18,6 +18,7 @@ import 'package:salute_bettin/features/farmaci/farmaci_page.dart';
 import 'package:salute_bettin/features/calendario/calendario_page.dart';
 import 'package:salute_bettin/features/impostazioni/promemoria_section.dart';
 import 'package:salute_bettin/features/impostazioni/language_section.dart';
+import 'package:salute_bettin/features/impostazioni/api_key_section.dart';
 import 'package:salute_bettin/features/impostazioni/drive_sync_section.dart';
 import 'package:salute_bettin/data/services/drive_sync_service.dart';
 
@@ -558,6 +559,10 @@ class _ImpostazioniPageState extends ConsumerState<ImpostazioniPage> {
 
         // ─── Promemoria ────────────────────────────────────
         const PromemoriaSection(),
+
+        const Divider(),
+
+        const ApiKeySection(),
 
         const Divider(),
 

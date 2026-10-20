@@ -45,6 +45,18 @@ class SaluteAnalysis {
     this.esamiDaFare = const [],
   });
 
+  /// Copia con il punteggio sostituito (lo score lo decide il codice).
+  SaluteAnalysis conScore(int nuovo) => SaluteAnalysis(
+        score: nuovo,
+        titolo: titolo,
+        sommario: sommario,
+        benchmark: benchmark,
+        puntiForza: puntiForza,
+        areeAttenzione: areeAttenzione,
+        miglioramenti: miglioramenti,
+        esamiDaFare: esamiDaFare,
+      );
+
   factory SaluteAnalysis.fromJson(Map<String, dynamic> json) => SaluteAnalysis(
     score: (json['score'] as num?)?.toInt() ?? 5,
     titolo: json['titolo'] ?? 'Analisi salute',
@@ -81,8 +93,30 @@ class SaluteAnalysis {
   };
 }
 
+/// Nessuna chiave API configurata: le funzioni AI non sono disponibili.
+class ChiaveApiMancanteException implements Exception {
+  const ChiaveApiMancanteException();
+  @override
+  String toString() =>
+      'Chiave API Claude non configurata. Inseriscila in Impostazioni → Chiave API Claude per usare le funzioni AI.';
+}
+
 // ─── Servizio Claude ──────────────────────────────────────────
 class ClaudeService {
+  /// Chiave inserita dall'utente nelle Impostazioni; se manca, quella
+  /// (opzionale) compilata in constants.dart. Vuota = AI non disponibile.
+  static String get apiKey {
+    try {
+      final k = SettingsService.instance.anthropicKey;
+      if (k.isNotEmpty) return k;
+    } catch (_) {}
+    const c = AppConstants.anthropicApiKey;
+    if (c.isEmpty || c.startsWith('YOUR_')) return '';
+    return c;
+  }
+
+  static bool get chiaveConfigurata => apiKey.isNotEmpty;
+
   static const String _baseUrl = 'https://api.anthropic.com/v1/messages';
 
   /// Legge il modello da SettingsService — fallback a Haiku se non disponibile
@@ -139,11 +173,14 @@ class ClaudeService {
     };
     if (systemPrompt != null) body['system'] = systemPrompt + _noteLingua();
 
+    final chiave = apiKey;
+    if (chiave.isEmpty) throw const ChiaveApiMancanteException();
+
     final response = await http.post(
       Uri.parse(_baseUrl),
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': AppConstants.anthropicApiKey,
+        'x-api-key': chiave,
         'anthropic-version': '2023-06-01',
         'anthropic-beta': 'pdfs-2024-09-25',
       },
@@ -276,6 +313,8 @@ Restituisci SOLO un JSON valido, senza markdown, senza backtick.
   // ─── Analizza salute con tutti i dati ────────────────────
   Future<SaluteAnalysis> analizzaSalute({
     required Map<String, dynamic> datiSalute,
+    required int scoreCalcolato,
+    List<Map<String, dynamic>> fattoriScore = const [],
   }) async {
     // ignore: prefer_interpolation_to_compose_strings
     const systemPrompt = r'''
@@ -293,48 +332,12 @@ DATI CHE RICEVI:
 - Anamnesi personale
 
 ═══════════════════════════════════════════════════
-CALCOLO SCORE — parti da 10 e applica le penalità:
-
-PESO/BMI:
-  BMI 25.0–29.9 (sovrappeso): -0.5
-  BMI 30.0–34.9 (obesità I): -1.5
-  BMI ≥35 (obesità II–III): -2.5
-
-ESAMI (per ogni valore fuori range):
-  Scostamento ≤10% dal range: -0.5 (max cumul. -2)
-  Scostamento 11–30%: -1.0 (max cumul. -2)
-  Scostamento >30%: -1.5 (max cumul. -3)
-
-FUMO:
-  1–10 sigarette/giorno: -1.0
-  11–20 sigarette/giorno: -1.5
-  >20 sigarette/giorno: -2.0
-
-ALCOOL:
-  1–2 bicchieri vino/giorno: -0.5
-  >2 bicchieri vino/giorno: -1.5
-
-ATTIVITÀ FISICA (passi/giorno):
-  <3.000 passi: -1.0
-  3.000–5.999 passi: -0.5
-  6.000–7.999 passi: nessuna penalità
-  ≥8.000 passi: +0.5 (bonus, max +0.5)
-
-SONNO (ore/notte, se disponibile da wearable):
-  <5.0 ore: -1.5
-  5.0–5.9 ore: -0.5
-  6.0–8.5 ore: nessuna penalità
-  >9.0 ore (adulti <65): -0.5 (possibile disturbo)
-  Se dato non disponibile: ignora la categoria.
-
-PATOLOGIE CRONICHE SERIE (diabete, cardiopatia ischemica,
-  insufficienza renale, BPCO, neoplasia attiva, HIV):
-  -1.0 per ciascuna (max cumulativo -2.5)
-
-REGOLE FINALI:
-  Score minimo 1, massimo 10.
-  Arrotonda all'intero più vicino.
-  Se dati insufficienti (nessun esame, nessuna visita): score 0.
+SCORE: è GIÀ STATO CALCOLATO dal sistema con una rubrica fissa e ti viene
+dato in "score_calcolato" (numero intero 1–10), con l'elenco dei fattori in
+"fattori_score" (categoria, punti, testo). NON ricalcolarlo e NON modificarlo:
+copia esattamente "score_calcolato" nel campo "score".
+Scrivi titolo, sommario, punti di forza, aree di attenzione e miglioramenti
+in modo COERENTE con quel punteggio e con i fattori che lo hanno determinato.
 
 ═══════════════════════════════════════════════════
 BENCHMARK: confronta con i dati epidemiologici ISTAT/ISS
@@ -367,7 +370,12 @@ FORMATO JSON — rispetta esattamente questa struttura:
 ''';
 
     final response = await _call(
-      prompt: 'Analizza questi dati sanitari e restituisci il JSON:\n${jsonEncode(datiSalute)}',
+      prompt: 'Analizza questi dati sanitari e restituisci il JSON:\n'
+          '${jsonEncode({
+            ...datiSalute,
+            'score_calcolato': scoreCalcolato,
+            'fattori_score': fattoriScore,
+          })}',
       systemPrompt: systemPrompt,
       maxTokens: 1800,
     );
@@ -375,6 +383,8 @@ FORMATO JSON — rispetta esattamente questa struttura:
         .replaceAll(RegExp(r'```json\s*'), '')
         .replaceAll(RegExp(r'```\s*'), '')
         .trim();
-    return SaluteAnalysis.fromJson(jsonDecode(text));
+    final analisi = SaluteAnalysis.fromJson(jsonDecode(text));
+    // Il punteggio è SEMPRE quello calcolato dal codice, mai quello dell'AI
+    return analisi.conScore(scoreCalcolato);
   }
 }

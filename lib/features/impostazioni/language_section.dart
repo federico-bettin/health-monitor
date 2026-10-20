@@ -31,7 +31,9 @@ class LanguageSection extends ConsumerWidget {
     } catch (_) {}
 
     await _traduciScore(messenger, ref, code);
-    if (code == 'en') await _traduciDati(messenger, ref);
+    if (code == 'en' && ClaudeService.chiaveConfigurata) {
+      await _traduciDati(messenger, ref);
+    }
   }
 
   /// Traduce (solo per la visualizzazione) esami e visite già salvati.
@@ -65,6 +67,8 @@ class LanguageSection extends ConsumerWidget {
       await repo.init();
       final paz = await repo.getPaziente();
       if (paz == null) return;
+      // Senza chiave AI la spiegazione è costruita dal codice (già traducibile)
+      if (!ClaudeService.chiaveConfigurata) return;
       final s = SettingsService.instance;
       final key = BackupService.slotKey(paz.nome, paz.cognome);
       final dati = s.cachedScoreData(key);

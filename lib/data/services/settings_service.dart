@@ -30,6 +30,16 @@ class SettingsService {
   Future<void> setDatiTradEn(String json) =>
       _prefs.setString('dati_tr_en', json);
 
+  // ─── Chiave API Anthropic inserita dall'utente ────────────
+  String get anthropicKey => _prefs.getString('anthropic_api_key') ?? '';
+  Future<void> setAnthropicKey(String key) => key.trim().isEmpty
+      ? _prefs.remove('anthropic_api_key')
+      : _prefs.setString('anthropic_api_key', key.trim());
+
+  // ─── Versione dell'algoritmo dello score (per azzerare cache vecchie) ──
+  int get scoreAlgoVersione => _prefs.getInt('score_algo_v') ?? 1;
+  Future<void> setScoreAlgoVersione(int v) => _prefs.setInt('score_algo_v', v);
+
   // ─── Biometrico ───────────────────────────────────────────
   bool get biometricEnabled =>
       _prefs.getBool(AppConstants.prefBiometricEnabled) ?? false;

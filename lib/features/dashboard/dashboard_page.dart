@@ -15,6 +15,7 @@ import 'package:salute_bettin/data/models/esame.dart';
 import 'package:salute_bettin/data/repositories/local_repository.dart';
 import 'package:salute_bettin/data/services/backup_service.dart';
 import 'package:salute_bettin/data/services/claude_service.dart';
+import 'package:salute_bettin/data/services/health_score_service.dart';
 import 'package:salute_bettin/data/services/health_service.dart';
 import 'package:salute_bettin/data/services/settings_service.dart';
 import 'package:salute_bettin/features/import_documento/import_documento_page.dart';
@@ -57,6 +58,12 @@ final saluteAnalysisProvider =
   final repo = LocalRepository();
   await repo.init();
   final settings = SettingsService.instance;
+
+  // Score deterministico (v2): scarta i punteggi calcolati in passato dall'AI
+  if (settings.scoreAlgoVersione < 2) {
+    await settings.clearAllScoreCache();
+    await settings.setScoreAlgoVersione(2);
+  }
 
   final paziente = await repo.getPaziente();
   final esami = await repo.getEsami();
@@ -129,10 +136,12 @@ final saluteAnalysisProvider =
   };
 
   final hash = _hashDati(dati);
-  final analysis = await ClaudeService().analizzaSalute(datiSalute: dati);
-  await settings.saveScoreCache(
-      analysis.score, jsonEncode(analysis.toJson()), hash, pazKey);
-  return analysis;
+  final r = await costruisciAnalisi(dati);
+  if (r.salva) {
+    await settings.saveScoreCache(
+        r.analisi.score, jsonEncode(r.analisi.toJson()), hash, pazKey);
+  }
+  return r.analisi;
 });
 
 final contatoriProvider = FutureProvider<Map<String, int>>((ref) async {
@@ -246,14 +255,18 @@ class DashboardPage extends ConsumerWidget {
           SizedBox(width: 8),
           Text('Ricalcola Health Score'),
         ]),
-        content: const Column(
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Il ricalcolo utilizza l\'AI (Claude) e consuma token.\n\n'
-              'Lo score viene aggiornato con gli ultimi esami, '
-              'visite e i tuoi dati di stile di vita.',
+              ClaudeService.chiaveConfigurata
+                  ? 'Il punteggio viene ricalcolato dall\'app con gli ultimi esami, '
+                      'visite e i tuoi dati di stile di vita. La spiegazione è scritta '
+                      'dall\'AI (Claude) e consuma token.'
+                  : 'Il punteggio viene ricalcolato dall\'app con gli ultimi esami, '
+                      'visite e i tuoi dati di stile di vita. Nessun costo: '
+                      'senza chiave API non c\'è la spiegazione dell\'AI.',
             ),
             SizedBox(height: 12),
             Row(children: [
@@ -354,9 +367,9 @@ class DashboardPage extends ConsumerWidget {
           ? BackupService.slotKey(paziente.nome, paziente.cognome)
           : 'default';
       final hash = _hashDati(dati);
-      final analysis = await ClaudeService().analizzaSalute(datiSalute: dati);
+      final r = await costruisciAnalisi(dati);
       await settings.saveScoreCache(
-          analysis.score, jsonEncode(analysis.toJson()), hash, pazKey);
+          r.analisi.score, jsonEncode(r.analisi.toJson()), hash, pazKey);
 
       ref.invalidate(saluteAnalysisProvider);
       ref.invalidate(contatoriProvider);
@@ -365,8 +378,10 @@ class DashboardPage extends ConsumerWidget {
 
       if (context.mounted) {
         Navigator.of(context, rootNavigator: true).pop(); // chiudi loading
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('✅ Score aggiornato!')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(r.aiFallita
+                ? 'Score aggiornato. Analisi AI non disponibile: riprova più tardi.'
+                : '✅ Score aggiornato!')));
       }
     } catch (e) {
       if (context.mounted) {
@@ -1038,6 +1053,37 @@ class _ScoreCardError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (error is ChiaveApiMancanteException) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+            color: AppTheme.primary.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppTheme.primary.withOpacity(0.25))),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: const [
+            Icon(Icons.vpn_key_outlined, color: AppTheme.primary),
+            SizedBox(width: 8),
+            Expanded(
+                child: Text('Health Score non disponibile',
+                    style: TextStyle(fontWeight: FontWeight.w600))),
+          ]),
+          const SizedBox(height: 8),
+          const Text(
+              'Il Health Score e l\'import automatico dei referti usano l\'AI di Claude. '
+              'Inserisci la tua chiave API in Impostazioni per attivarli. '
+              'Tutto il resto dell\'app funziona normalmente senza chiave.',
+              style:
+                  TextStyle(fontSize: 12, color: AppTheme.textSecondaryDark)),
+          const SizedBox(height: 8),
+          TextButton.icon(
+            onPressed: () => context.go(AppRoutes.impostazioni),
+            icon: const Icon(Icons.settings_outlined, size: 18),
+            label: const Text('Vai alle Impostazioni'),
+          ),
+        ]),
+      );
+    }
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
