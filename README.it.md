@@ -151,4 +151,4 @@ MIT, vedi [LICENSE](LICENSE).
 
 ## Autore
 
-Federico Bettin, ingegnere software (embedded, automazione industriale, sistemi safety-critical).
+Federico Bettin, system & software engineer (embedded, automazione industriale, sistemi safety-critical).
