@@ -126,6 +126,31 @@ Il sync con Google Drive salva una copia dei dati sul **tuo** Drive. Per ora l'a
 - Scegli il modello Claude in Impostazioni: **Haiku 4.5** (predefinito, il più economico), **Sonnet 4.6** o **Opus 4.6**.
 - Schermata con **consumo di token** e costo stimato.
 
+## Roadmap
+
+Funzionalità pianificate, in ordine di priorità. Le date non sono fissate.
+
+1. **Promemoria farmaci** (in lavorazione)
+   - Piano terapeutico per ogni farmaco: dose, orari, giorni, durata o "al bisogno".
+   - Notifiche automatiche agli orari previsti, con registro delle assunzioni (preso / saltato).
+   - Poi: azioni direttamente dalla notifica, aderenza alla terapia e avviso di fine scorta.
+   - Piattaforma: Android. Funziona anche senza chiave API Claude.
+
+2. **Chat con i tuoi dati**
+   - Domande in linguaggio naturale sui tuoi esami, farmaci e dati del wearable.
+   - Modalità "medico che mi conosce" (tono diretto, usa i tuoi dati) oppure spiegazione neutra.
+   - Non sostituisce il parere medico: nessuna diagnosi, nessuna modifica di terapia, rimando all'emergenza in caso di sintomi gravi.
+   - Riservatezza: nome, cognome e data di nascita non vengono inviati; consenso esplicito alla prima attivazione.
+   - Richiede una chiave API Claude.
+
+3. **Interazioni tra farmaci**
+   - Controllo locale delle interazioni gravi più note, con l'AI come secondo livello.
+   - Solo a scopo informativo: verifica sempre con medico o farmacista.
+
+**In programma anche:** CI su GitHub, chiave API in archiviazione sicura, schermata dei trend per singolo esame, report PDF da portare dal medico.
+
+> Health Monitor è uno strumento personale a scopo informativo e non è un dispositivo medico.
+
 ## 🛠️ Per sviluppatori: compilare da sorgente
 
 Requisiti: Flutter SDK, Android SDK (minSdk 26), un dispositivo o emulatore Android.
