@@ -136,6 +136,31 @@ The key is stored only on your phone and is sent only to Anthropic. You can remo
 - Full **Italian / English** interface with flags in Settings.
 - The health score, the calendar and the medical terms are translated. Texts you saved yourself (exam names, notes, diagnosis, therapy) can be translated for display with one tap; **the original data is never modified**.
 
+## Roadmap
+
+Planned features, in order of priority. No fixed dates.
+
+1. **Medication reminders** (in progress)
+   - Treatment plan per medication: dose, times, days, duration or "as needed".
+   - Automatic notifications at the scheduled times, with an intake log (taken / skipped).
+   - Later: actions directly from the notification, adherence tracking and low-stock alerts.
+   - Platform: Android. Works without a Claude API key.
+
+2. **Chat with your data**
+   - Natural-language questions about your lab results, medications and wearable data.
+   - "A doctor who knows me" mode (direct tone, uses your data) or a neutral explanation mode.
+   - Not a substitute for medical advice: no diagnoses, no therapy changes, emergency guidance for serious symptoms.
+   - Privacy: first name, last name and exact date of birth are never sent; explicit consent on first use.
+   - Requires a Claude API key.
+
+3. **Drug interactions**
+   - Local check for the best-known serious interactions, with AI as a second layer.
+   - For information only: always confirm with your doctor or pharmacist.
+
+**Also planned:** GitHub CI, API key in secure storage, per-exam trend view, PDF report to bring to your doctor.
+
+> Health Monitor is a personal, informational tool and is not a medical device.
+
 ## Tech stack
 
 | Area | Choice |
