@@ -5,6 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:salute_bettin/core/constants.dart';
 import 'package:salute_bettin/data/models/appuntamento.dart';
+import 'package:salute_bettin/data/models/assunzione_farmaco.dart';
 import 'package:salute_bettin/data/models/esame.dart';
 import 'package:salute_bettin/data/models/farmaco.dart';
 import 'package:salute_bettin/data/models/paziente.dart';
@@ -136,6 +137,7 @@ class DriveRepository implements IDataRepository {
         'esami': [],
         'visite': [],
         'farmaci': [],
+        'assunzioni': [],
         'appuntamenti': [],
         'updatedAt': DateTime.now().toIso8601String(),
       };
@@ -272,6 +274,52 @@ class DriveRepository implements IDataRepository {
     final list = List<dynamic>.from(_cache['farmaci'] ?? []);
     list.removeWhere((f) => f['id'] == id);
     _cache['farmaci'] = list;
+    await _saveToDrive();
+  }
+
+  // ─── Registro assunzioni ──────────────────────────────────
+  List<AssunzioneFarmaco> _tutteAssunzioni() => ((_cache['assunzioni'] as List?) ?? [])
+      .map((x) => AssunzioneFarmaco.fromJson(Map<String, dynamic>.from(x)))
+      .toList();
+
+  @override
+  Future<List<AssunzioneFarmaco>> getAssunzioni(DateTime da, DateTime a) async {
+    final list = _tutteAssunzioni().where((x) {
+      final r = x.riferimento;
+      return r != null && !r.isBefore(da) && r.isBefore(a);
+    }).toList();
+    list.sort((x, y) => y.riferimento!.compareTo(x.riferimento!));
+    return list;
+  }
+
+  @override
+  Future<List<AssunzioneFarmaco>> getAssunzioniFarmaco(String farmacoId) async {
+    final list =
+        _tutteAssunzioni().where((x) => x.farmacoId == farmacoId).toList();
+    list.sort((x, y) => (y.riferimento ?? DateTime(2000))
+        .compareTo(x.riferimento ?? DateTime(2000)));
+    return list;
+  }
+
+  @override
+  Future<void> saveAssunzione(AssunzioneFarmaco assunzione) async {
+    final list = List<dynamic>.from(_cache['assunzioni'] ?? []);
+    final idx = list.indexWhere((x) => x['id'] == assunzione.id);
+    if (idx >= 0) {
+      list[idx] = assunzione.toJson();
+    } else {
+      list.add(assunzione.toJson());
+    }
+    _cache['assunzioni'] = list;
+    _cache['updatedAt'] = DateTime.now().toIso8601String();
+    await _saveToDrive();
+  }
+
+  @override
+  Future<void> deleteAssunzione(String id) async {
+    final list = List<dynamic>.from(_cache['assunzioni'] ?? []);
+    list.removeWhere((x) => x['id'] == id);
+    _cache['assunzioni'] = list;
     await _saveToDrive();
   }
 

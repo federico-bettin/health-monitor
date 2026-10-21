@@ -2,6 +2,10 @@ import 'package:hive/hive.dart';
 
 part 'farmaco.g.dart';
 
+/// Tipo di ricorrenza del piano terapeutico.
+/// Salvato come indice (int) con fallback sicuro su [giornaliera].
+enum FrequenzaFarmaco { giornaliera, giorniSettimana, ogniNGiorni, alBisogno }
+
 @HiveType(typeId: 3)
 class Farmaco extends HiveObject {
   @HiveField(0)
@@ -40,6 +44,33 @@ class Farmaco extends HiveObject {
   @HiveField(11)
   DateTime updatedAt;
 
+  // ─── Piano terapeutico (promemoria) ───────────────────────
+  // Riusa: dosaggio (dose), dataInizio, dataFine (null = cronica),
+  // orariAssunzione (orari "HH:mm"), note.
+
+  /// Indice di [FrequenzaFarmaco]; usare il getter [frequenzaTipo].
+  @HiveField(12, defaultValue: 0)
+  int frequenzaTipoIdx;
+
+  /// Giorni della settimana 1-7 (1 = lunedì, 7 = domenica, come DateTime.weekday).
+  @HiveField(13)
+  List<int> giorniSettimana;
+
+  /// Per [FrequenzaFarmaco.ogniNGiorni]: intervallo, contato da [dataInizio].
+  @HiveField(14)
+  int? ogniNGiorni;
+
+  @HiveField(15, defaultValue: false)
+  bool promemoriaAttivo;
+
+  @HiveField(16)
+  String? istruzioni; // es. "a stomaco pieno"
+
+  /// Farmaco con registro assunzioni "eliminato": sparisce dalla lista attiva
+  /// ma resta nello storico.
+  @HiveField(17, defaultValue: false)
+  bool archiviato;
+
   Farmaco({
     required this.id,
     required this.nome,
@@ -53,8 +84,22 @@ class Farmaco extends HiveObject {
     this.note,
     List<String>? orariAssunzione,
     DateTime? updatedAt,
+    this.frequenzaTipoIdx = 0,
+    List<int>? giorniSettimana,
+    this.ogniNGiorni,
+    this.promemoriaAttivo = false,
+    this.istruzioni,
+    this.archiviato = false,
   })  : orariAssunzione = orariAssunzione ?? [],
+        giorniSettimana = giorniSettimana ?? [],
         updatedAt = updatedAt ?? DateTime.now();
+
+  FrequenzaFarmaco get frequenzaTipo =>
+      (frequenzaTipoIdx >= 0 && frequenzaTipoIdx < FrequenzaFarmaco.values.length)
+          ? FrequenzaFarmaco.values[frequenzaTipoIdx]
+          : FrequenzaFarmaco.giornaliera;
+
+  set frequenzaTipo(FrequenzaFarmaco v) => frequenzaTipoIdx = v.index;
 
   bool get isScaduto => dataFine != null && dataFine!.isBefore(DateTime.now());
 
@@ -71,6 +116,12 @@ class Farmaco extends HiveObject {
         'note': note,
         'orariAssunzione': orariAssunzione,
         'updatedAt': updatedAt.toIso8601String(),
+        'frequenzaTipo': frequenzaTipoIdx,
+        'giorniSettimana': giorniSettimana,
+        'ogniNGiorni': ogniNGiorni,
+        'promemoriaAttivo': promemoriaAttivo,
+        'istruzioni': istruzioni,
+        'archiviato': archiviato,
       };
 
   factory Farmaco.fromJson(Map<String, dynamic> json) => Farmaco(
@@ -91,5 +142,15 @@ class Farmaco extends HiveObject {
         updatedAt: json['updatedAt'] != null
             ? DateTime.parse(json['updatedAt'])
             : DateTime.now(),
+        // Campi del piano terapeutico: assenti nei backup/Drive precedenti.
+        frequenzaTipoIdx: (json['frequenzaTipo'] as num?)?.toInt() ?? 0,
+        giorniSettimana: ((json['giorniSettimana'] as List?) ?? [])
+            .whereType<num>()
+            .map((e) => e.toInt())
+            .toList(),
+        ogniNGiorni: (json['ogniNGiorni'] as num?)?.toInt(),
+        promemoriaAttivo: json['promemoriaAttivo'] as bool? ?? false,
+        istruzioni: json['istruzioni'] as String?,
+        archiviato: json['archiviato'] as bool? ?? false,
       );
 }

@@ -6,12 +6,15 @@ import 'package:salute_bettin/data/models/farmaco.dart';
 import 'package:salute_bettin/data/repositories/local_repository.dart';
 import 'package:salute_bettin/data/repositories/repository_provider.dart';
 import 'farmaco_form_page.dart';
+import 'oggi_page.dart';
+import 'piano_testi.dart';
 import 'farmaco_dettaglio_page.dart';
 
 final farmaciProvider = FutureProvider<List<Farmaco>>((ref) async {
   final repo = LocalRepository();
   await repo.init();
-  final farmaci = await repo.getFarmaci();
+  // I farmaci archiviati (eliminati ma con registro assunzioni) restano solo nello storico
+  final farmaci = (await repo.getFarmaci()).where((f) => !f.archiviato).toList();
   farmaci.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
   return farmaci;
 });
@@ -24,7 +27,19 @@ class FarmaciPage extends ConsumerWidget {
     final farmaciAsync = ref.watch(farmaciProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Farmaci')),
+      appBar: AppBar(
+        title: const Text('Farmaci'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.today),
+            tooltip: tr('Oggi'),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const OggiPage()),
+            ),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await Navigator.push(
@@ -113,10 +128,13 @@ class _FarmacoCard extends StatelessWidget {
         title: Text(farmaco.nome,
             style: Theme.of(context).textTheme.titleMedium),
         subtitle: Text(
-          '${farmaco.dosaggio} · ${farmaco.frequenza}',
+          '${farmaco.dosaggio} · ${etichettaFrequenza(farmaco)}',
           style: Theme.of(context).textTheme.bodySmall,
         ),
-        trailing: farmaco.attivo
+        trailing: farmaco.promemoriaAttivo
+            ? const Icon(Icons.notifications_active,
+                size: 20, color: AppTheme.primary)
+            : farmaco.attivo
             ? Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

@@ -18,6 +18,7 @@ import 'package:salute_bettin/data/services/claude_service.dart';
 import 'package:salute_bettin/data/services/health_score_service.dart';
 import 'package:salute_bettin/data/services/health_service.dart';
 import 'package:salute_bettin/data/services/settings_service.dart';
+import 'package:salute_bettin/features/farmaci/prossima_dose_card.dart';
 import 'package:salute_bettin/features/import_documento/import_documento_page.dart';
 import 'package:salute_bettin/features/statistiche/statistiche_page.dart';
 
@@ -150,7 +151,7 @@ final contatoriProvider = FutureProvider<Map<String, int>>((ref) async {
   return {
     'esami': (await repo.getEsami()).length,
     'visite': (await repo.getVisite()).length,
-    'farmaci': (await repo.getFarmaci()).where((f) => f.attivo).length,
+    'farmaci': (await repo.getFarmaci()).where((f) => f.attivo && !f.archiviato).length,
     'appuntamenti':
         (await repo.getAppuntamenti()).where((a) => !a.isPassato).length,
   };
@@ -500,6 +501,9 @@ class DashboardPage extends ConsumerWidget {
               data: (c) => _ContatoriRow(contatori: c),
             ),
             const SizedBox(height: 16),
+
+            // Prossima dose (solo se c'è un piano con promemoria)
+            const ProssimaDoseCard(),
 
             // Sezione Wearable — dati da Health Connect (qualsiasi app) oppure card "Connetti"
             configAsync.when(

@@ -7,12 +7,14 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:salute_bettin/core/router.dart';
 import 'package:salute_bettin/core/theme.dart';
 import 'package:salute_bettin/data/models/appuntamento.dart';
+import 'package:salute_bettin/data/models/assunzione_farmaco.dart';
 import 'package:salute_bettin/data/models/esame.dart';
 import 'package:salute_bettin/data/models/farmaco.dart';
 import 'package:salute_bettin/data/models/paziente.dart';
 import 'package:salute_bettin/data/models/token_usage.dart';
 import 'package:salute_bettin/data/models/visita.dart';
 import 'package:salute_bettin/data/services/drive_sync_service.dart';
+import 'package:salute_bettin/data/services/farmaci_reminder_service.dart';
 import 'package:salute_bettin/data/services/notification_service.dart';
 import 'package:salute_bettin/data/services/settings_service.dart';
 
@@ -41,6 +43,7 @@ void main() async {
   Hive.registerAdapter(ValoreEsameAdapter());
   Hive.registerAdapter(VisitaAdapter());
   Hive.registerAdapter(FarmacoAdapter());
+  Hive.registerAdapter(AssunzioneFarmacoAdapter());
   Hive.registerAdapter(AppuntamentoAdapter());
   Hive.registerAdapter(TipoAppuntamentoAdapter());
   Hive.registerAdapter(TokenUsageAdapter());
@@ -50,7 +53,9 @@ void main() async {
   // Notifiche promemoria: init e riprogrammazione (non blocca l'avvio se fallisce)
   try {
     await NotificationService.instance.init();
+    NotificationService.instance.navigatore = (rotta) => appRouter.push(rotta);
     await NotificationService.instance.rischedulaTutti();
+    await FarmaciReminderService.instance.ricostruisci();
   } catch (_) {}
 
   // Sync automatico con Drive (non blocca l'avvio)

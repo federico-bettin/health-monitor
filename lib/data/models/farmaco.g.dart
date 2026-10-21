@@ -29,13 +29,19 @@ class FarmacoAdapter extends TypeAdapter<Farmaco> {
       note: fields[9] as String?,
       orariAssunzione: (fields[10] as List?)?.cast<String>(),
       updatedAt: fields[11] as DateTime?,
+      frequenzaTipoIdx: fields[12] == null ? 0 : fields[12] as int,
+      giorniSettimana: (fields[13] as List?)?.cast<int>(),
+      ogniNGiorni: fields[14] as int?,
+      promemoriaAttivo: fields[15] == null ? false : fields[15] as bool,
+      istruzioni: fields[16] as String?,
+      archiviato: fields[17] == null ? false : fields[17] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, Farmaco obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(18)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -59,7 +65,19 @@ class FarmacoAdapter extends TypeAdapter<Farmaco> {
       ..writeByte(10)
       ..write(obj.orariAssunzione)
       ..writeByte(11)
-      ..write(obj.updatedAt);
+      ..write(obj.updatedAt)
+      ..writeByte(12)
+      ..write(obj.frequenzaTipoIdx)
+      ..writeByte(13)
+      ..write(obj.giorniSettimana)
+      ..writeByte(14)
+      ..write(obj.ogniNGiorni)
+      ..writeByte(15)
+      ..write(obj.promemoriaAttivo)
+      ..writeByte(16)
+      ..write(obj.istruzioni)
+      ..writeByte(17)
+      ..write(obj.archiviato);
   }
 
   @override

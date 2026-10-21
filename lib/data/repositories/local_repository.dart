@@ -1,6 +1,7 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:salute_bettin/core/constants.dart';
 import 'package:salute_bettin/data/models/appuntamento.dart';
+import 'package:salute_bettin/data/models/assunzione_farmaco.dart';
 import 'package:salute_bettin/data/models/esame.dart';
 import 'package:salute_bettin/data/models/farmaco.dart';
 import 'package:salute_bettin/data/models/paziente.dart';
@@ -8,12 +9,14 @@ import 'package:salute_bettin/data/models/token_usage.dart';
 import 'package:salute_bettin/data/models/visita.dart';
 import 'package:salute_bettin/data/repositories/i_data_repository.dart';
 import 'package:salute_bettin/data/services/drive_sync_service.dart';
+import 'package:salute_bettin/data/services/farmaci_reminder_service.dart';
 
 class LocalRepository implements IDataRepository {
   Box<Paziente>? _pazienteBox;
   Box<Esame>? _esamiBox;
   Box<Visita>? _visiteBox;
   Box<Farmaco>? _farmaciBox;
+  Box<AssunzioneFarmaco>? _assunzioniBox;
   Box<Appuntamento>? _appuntamentiBox;
   Box<TokenUsage>? _tokenBox;
 
@@ -23,6 +26,7 @@ class LocalRepository implements IDataRepository {
     _esamiBox = await Hive.openBox<Esame>(AppConstants.boxEsami);
     _visiteBox = await Hive.openBox<Visita>(AppConstants.boxVisite);
     _farmaciBox = await Hive.openBox<Farmaco>(AppConstants.boxFarmaci);
+    _assunzioniBox = await Hive.openBox<AssunzioneFarmaco>(kBoxAssunzioni);
     _appuntamentiBox =
         await Hive.openBox<Appuntamento>(AppConstants.boxAppuntamenti);
     _tokenBox = await Hive.openBox<TokenUsage>(AppConstants.boxTokenUsage);
@@ -34,6 +38,7 @@ class LocalRepository implements IDataRepository {
     await _esamiBox?.close();
     await _visiteBox?.close();
     await _farmaciBox?.close();
+    await _assunzioniBox?.close();
     await _appuntamentiBox?.close();
     await _tokenBox?.close();
   }
@@ -94,11 +99,48 @@ class LocalRepository implements IDataRepository {
   Future<void> saveFarmaco(Farmaco farmaco) async {
     await _farmaciBox?.put(farmaco.id, farmaco);
     DriveSyncService.instance.segnaModifica();
+    FarmaciReminderService.instance.richiediRicostruzione();
   }
 
   @override
   Future<void> deleteFarmaco(String id) async {
     await _farmaciBox?.delete(id);
+    DriveSyncService.instance.segnaModifica();
+    FarmaciReminderService.instance.richiediRicostruzione();
+  }
+
+  // ─── Registro assunzioni ──────────────────────────────────
+  @override
+  Future<List<AssunzioneFarmaco>> getAssunzioni(DateTime da, DateTime a) async {
+    final list = (_assunzioniBox?.values ?? const <AssunzioneFarmaco>[])
+        .where((x) {
+      final r = x.riferimento;
+      return r != null && !r.isBefore(da) && r.isBefore(a);
+    }).toList();
+    list.sort((x, y) => y.riferimento!.compareTo(x.riferimento!)); // recenti prima
+    return list;
+  }
+
+  @override
+  Future<List<AssunzioneFarmaco>> getAssunzioniFarmaco(String farmacoId) async {
+    final list = (_assunzioniBox?.values ?? const <AssunzioneFarmaco>[])
+        .where((x) => x.farmacoId == farmacoId)
+        .toList();
+    list.sort((x, y) => (y.riferimento ?? DateTime(2000))
+        .compareTo(x.riferimento ?? DateTime(2000)));
+    return list;
+  }
+
+  @override
+  Future<void> saveAssunzione(AssunzioneFarmaco assunzione) async {
+    assunzione.updatedAt = DateTime.now();
+    await _assunzioniBox?.put(assunzione.id, assunzione);
+    DriveSyncService.instance.segnaModifica();
+  }
+
+  @override
+  Future<void> deleteAssunzione(String id) async {
+    await _assunzioniBox?.delete(id);
     DriveSyncService.instance.segnaModifica();
   }
 
@@ -135,8 +177,10 @@ class LocalRepository implements IDataRepository {
     await _esamiBox?.clear();
     await _visiteBox?.clear();
     await _farmaciBox?.clear();
+    await _assunzioniBox?.clear();
     await _appuntamentiBox?.clear();
     await _tokenBox?.clear();
+    FarmaciReminderService.instance.richiediRicostruzione();
   }
 
   @override
@@ -147,6 +191,9 @@ class LocalRepository implements IDataRepository {
       'esami': (await getEsami()).map((e) => e.toJson()).toList(),
       'visite': (await getVisite()).map((v) => v.toJson()).toList(),
       'farmaci': (await getFarmaci()).map((f) => f.toJson()).toList(),
+      'assunzioni': (_assunzioniBox?.values ?? const <AssunzioneFarmaco>[])
+          .map((x) => x.toJson())
+          .toList(),
       'appuntamenti': (await getAppuntamenti()).map((a) => a.toJson()).toList(),
       'exportedAt': DateTime.now().toIso8601String(),
     };
@@ -166,6 +213,11 @@ class LocalRepository implements IDataRepository {
     }
     for (final f in (data['farmaci'] as List? ?? [])) {
       await saveFarmaco(Farmaco.fromJson(f));
+    }
+    for (final x in (data['assunzioni'] as List? ?? [])) {
+      // Salva direttamente per conservare updatedAt originale
+      final ass = AssunzioneFarmaco.fromJson(Map<String, dynamic>.from(x));
+      await _assunzioniBox?.put(ass.id, ass);
     }
     for (final a in (data['appuntamenti'] as List? ?? [])) {
       await saveAppuntamento(Appuntamento.fromJson(a));

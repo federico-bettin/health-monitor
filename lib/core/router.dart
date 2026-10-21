@@ -6,6 +6,7 @@ import 'package:salute_bettin/features/calendario/calendario_page.dart';
 import 'package:salute_bettin/features/dashboard/dashboard_page.dart';
 import 'package:salute_bettin/features/esami/esami_page.dart';
 import 'package:salute_bettin/features/farmaci/farmaci_page.dart';
+import 'package:salute_bettin/features/farmaci/oggi_page.dart';
 import 'package:salute_bettin/features/impostazioni/impostazioni_page.dart';
 import 'package:salute_bettin/features/import_documento/import_documento_page.dart';
 import 'package:salute_bettin/features/onboarding/onboarding_page.dart';
@@ -27,6 +28,7 @@ class AppRoutes {
   static const String profilo = '/profilo';
   static const String wearable = '/wearable'; // ← nuovo
   static const String conflitti = '/conflitti';
+  static const String oggi = '/oggi'; // = kRottaOggi (notification_service.dart)
 }
 
 final GoRouter appRouter = GoRouter(
@@ -48,6 +50,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.wearable,
       builder: (c, s) => const WearablePage(),
+    ),
+    GoRoute(
+      path: AppRoutes.oggi,
+      builder: (c, s) => const OggiPage(),
     ),
 
     // Shell con bottom nav

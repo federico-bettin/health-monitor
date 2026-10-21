@@ -1,4 +1,5 @@
 import 'package:salute_bettin/data/models/appuntamento.dart';
+import 'package:salute_bettin/data/models/assunzione_farmaco.dart';
 import 'package:salute_bettin/data/models/esame.dart';
 import 'package:salute_bettin/data/models/farmaco.dart';
 import 'package:salute_bettin/data/models/paziente.dart';
@@ -33,6 +34,13 @@ abstract class IDataRepository {
   Future<Farmaco?> getFarmaco(String id);
   Future<void> saveFarmaco(Farmaco farmaco);
   Future<void> deleteFarmaco(String id);
+
+  // ─── Registro assunzioni ──────────────────────────────────
+  /// Assunzioni con riferimento (prevista, altrimenti registrata) in [da, a).
+  Future<List<AssunzioneFarmaco>> getAssunzioni(DateTime da, DateTime a);
+  Future<List<AssunzioneFarmaco>> getAssunzioniFarmaco(String farmacoId);
+  Future<void> saveAssunzione(AssunzioneFarmaco assunzione);
+  Future<void> deleteAssunzione(String id);
 
   // ─── Appuntamenti ─────────────────────────────────────────
   Future<List<Appuntamento>> getAppuntamenti();

@@ -1,4 +1,5 @@
 import 'package:salute_bettin/data/models/appuntamento.dart';
+import 'package:salute_bettin/data/models/assunzione_farmaco.dart';
 import 'package:salute_bettin/data/models/esame.dart';
 import 'package:salute_bettin/data/models/farmaco.dart';
 import 'package:salute_bettin/data/models/paziente.dart';
@@ -165,6 +166,27 @@ class SyncRepository implements IDataRepository {
   Future<void> deleteFarmaco(String id) async {
     await _local.deleteFarmaco(id);
     await _drive.deleteFarmaco(id);
+  }
+
+  // ─── Registro assunzioni ──────────────────────────────────
+  @override
+  Future<List<AssunzioneFarmaco>> getAssunzioni(DateTime da, DateTime a) =>
+      _local.getAssunzioni(da, a);
+
+  @override
+  Future<List<AssunzioneFarmaco>> getAssunzioniFarmaco(String farmacoId) =>
+      _local.getAssunzioniFarmaco(farmacoId);
+
+  @override
+  Future<void> saveAssunzione(AssunzioneFarmaco assunzione) async {
+    await _local.saveAssunzione(assunzione);
+    await _drive.saveAssunzione(assunzione);
+  }
+
+  @override
+  Future<void> deleteAssunzione(String id) async {
+    await _local.deleteAssunzione(id);
+    await _drive.deleteAssunzione(id);
   }
 
   // ─── Appuntamenti ─────────────────────────────────────────

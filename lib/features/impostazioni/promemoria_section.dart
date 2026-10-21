@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide Text;
 import 'package:salute_bettin/core/i18n.dart';
 import 'package:salute_bettin/core/theme.dart';
+import 'package:salute_bettin/features/impostazioni/promemoria_farmaci_section.dart';
 import 'package:salute_bettin/data/services/notification_service.dart';
 import 'package:salute_bettin/data/services/settings_service.dart';
 
@@ -113,6 +114,7 @@ class _PromemoriaSectionState extends State<PromemoriaSection> {
           subtitle: Text(_oraTesto),
           onTap: attive ? _scegliOra : null,
         ),
+        const PromemoriaFarmaciSection(),
       ],
     );
   }

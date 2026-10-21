@@ -4,6 +4,9 @@ import 'package:salute_bettin/core/theme.dart';
 import 'package:salute_bettin/data/models/farmaco.dart';
 import 'package:salute_bettin/data/repositories/local_repository.dart';
 import 'package:salute_bettin/data/repositories/repository_provider.dart';
+import 'farmaco_ciclo_vita.dart';
+import 'piano_testi.dart';
+import 'registra_assunzione.dart';
 import 'farmaco_form_page.dart';
 
 class FarmacoDettaglioPage extends StatelessWidget {
@@ -57,14 +60,37 @@ class FarmacoDettaglioPage extends StatelessWidget {
             const SizedBox(height: 20),
             _InfoCard(children: [
               _InfoRow(icon: Icons.medication, label: 'Dosaggio', value: farmaco.dosaggio),
-              _InfoRow(icon: Icons.schedule, label: 'Frequenza', value: farmaco.frequenza),
+              _InfoRow(icon: Icons.schedule, label: 'Frequenza', value: etichettaFrequenza(farmaco)),
               if (farmaco.principioAttivo != null)
                 _InfoRow(icon: Icons.science, label: 'Principio attivo', value: farmaco.principioAttivo!),
               if (farmaco.medico != null)
                 _InfoRow(icon: Icons.person, label: 'Medico', value: farmaco.medico!),
               _InfoRow(icon: Icons.play_arrow, label: 'Data inizio', value: _formatData(farmaco.dataInizio)),
               _InfoRow(icon: Icons.stop, label: 'Data fine', value: _formatData(farmaco.dataFine)),
+              _InfoRow(
+                  icon: Icons.notifications_active_outlined,
+                  label: 'Promemoria',
+                  value: farmaco.promemoriaAttivo ? tr('Attivo') : tr('Non attivo')),
+              if ((farmaco.istruzioni ?? '').trim().isNotEmpty)
+                _InfoRow(icon: Icons.info_outline, label: 'Istruzioni', value: farmaco.istruzioni!.trim()),
             ]),
+            if (farmaco.frequenzaTipo == FrequenzaFarmaco.alBisogno) ...[
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.add_task),
+                  label: const Text('Registra assunzione'),
+                  onPressed: () async {
+                    final ok = await registraAssunzioneManuale(context, farmaco);
+                    if (ok && context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Assunzione registrata')));
+                    }
+                  },
+                ),
+              ),
+            ],
             if (farmaco.note != null) ...[
               const SizedBox(height: 20),
               Text('Note', style: Theme.of(context).textTheme.headlineMedium),
@@ -103,8 +129,15 @@ class FarmacoDettaglioPage extends StatelessWidget {
     if (ok == true && context.mounted) {
       final repo = LocalRepository();
       await repo.init();
-      await repo.deleteFarmaco(farmaco.id);
-      if (context.mounted) Navigator.pop(context);
+      final archiviato = await eliminaOArchiviaFarmaco(repo, farmaco);
+      if (context.mounted) {
+        if (archiviato) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Farmaco archiviato: lo storico delle assunzioni resta disponibile'),
+          ));
+        }
+        Navigator.pop(context);
+      }
     }
   }
 }

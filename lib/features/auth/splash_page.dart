@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:salute_bettin/core/router.dart';
 import 'package:salute_bettin/core/theme.dart';
 import 'package:salute_bettin/data/services/auth_service.dart';
+import 'package:salute_bettin/data/services/notification_service.dart';
 import 'package:salute_bettin/data/services/settings_service.dart';
 
 class SplashPage extends ConsumerStatefulWidget {
@@ -46,6 +47,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
     final settings = SettingsService.instance;
 
     if (!settings.onboardingDone) {
+      NotificationService.instance.appPronta();
       context.go(AppRoutes.onboarding);
       return;
     }
@@ -55,7 +57,10 @@ class _SplashPageState extends ConsumerState<SplashPage>
       if (!ok) { setState(() => _authFailed = true); return; }
     }
     if (!mounted) return;
+    // Avvio toccando una notifica dei farmaci: dashboard e poi "Oggi" (con back)
+    final rotta = NotificationService.instance.appPronta();
     context.go(AppRoutes.dashboard);
+    if (rotta != null) Future.microtask(() => appRouter.push(rotta));
   }
 
   @override

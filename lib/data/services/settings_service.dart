@@ -189,6 +189,26 @@ class SettingsService {
   Future<void> setNotifOraMinuti(int v) =>
       _prefs.setInt('notif_ora_minuti', v);
 
+  // ─── Promemoria farmaci ───────────────────────────────────
+  bool get farmaciNotifAttive => _prefs.getBool('farmaci_notif_attive') ?? true;
+  Future<void> setFarmaciNotifAttive(bool v) =>
+      _prefs.setBool('farmaci_notif_attive', v);
+
+  /// Mostra il nome del farmaco nella notifica (default sì).
+  bool get farmaciMostraNome => _prefs.getBool('farmaci_mostra_nome') ?? true;
+  Future<void> setFarmaciMostraNome(bool v) =>
+      _prefs.setBool('farmaci_mostra_nome', v);
+
+  /// Esito dell'ultima ricostruzione: notifiche pianificate e ultima data.
+  int get farmaciPianificati => _prefs.getInt('farmaci_pianificati') ?? 0;
+  Future<void> setFarmaciPianificati(int v) =>
+      _prefs.setInt('farmaci_pianificati', v);
+
+  String? get farmaciPianificatiFino => _prefs.getString('farmaci_pianificati_fino');
+  Future<void> setFarmaciPianificatiFino(String? v) => v == null
+      ? _prefs.remove('farmaci_pianificati_fino')
+      : _prefs.setString('farmaci_pianificati_fino', v);
+
   // ─── Reset ────────────────────────────────────────────────
   Future<void> reset() => _prefs.clear();
 }

@@ -8,6 +8,14 @@ import 'package:salute_bettin/data/services/settings_service.dart';
 import 'package:timezone/data/latest.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
 
+/// Gli ID delle notifiche dei farmaci partono da qui; quelli degli appuntamenti
+/// restano sotto (vedi [NotificationService._idPer]).
+const int kIdBaseFarmaci = 1100000000;
+
+/// Payload delle notifiche dei farmaci e rotta che aprono.
+const String kPayloadFarmaci = 'farmaci';
+const String kRottaOggi = '/oggi';
+
 /// Promemoria per visite ed esami.
 /// Comportamento unico per tutti, impostabile in Impostazioni:
 /// N giorni prima (default 3) all'ora scelta (default 9:00).
@@ -19,6 +27,38 @@ class NotificationService {
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
   bool _ready = false;
+
+  /// Plugin condiviso con il servizio dei promemoria farmaci.
+  FlutterLocalNotificationsPlugin get plugin => _plugin;
+  bool get pronto => _ready;
+
+  /// Navigazione (impostata in main): apre una rotta dell'app.
+  void Function(String rotta)? navigatore;
+
+  /// Rotta da aprire appena l'app è pronta (avvio da notifica, dopo lo sblocco).
+  String? rottaPendente;
+  bool _appPronta = false;
+
+  /// Lo splash la chiama quando l'app è pronta (dopo biometrico/onboarding).
+  /// Ritorna la rotta pendente (avvio da notifica) da aprire, se c'è.
+  String? appPronta() {
+    _appPronta = true;
+    final r = rottaPendente;
+    rottaPendente = null;
+    return r;
+  }
+
+  void _apriRotta(String rotta) {
+    if (_appPronta && navigatore != null) {
+      navigatore!(rotta);
+    } else {
+      rottaPendente = rotta;
+    }
+  }
+
+  void _onRisposta(NotificationResponse r) {
+    if (r.payload == kPayloadFarmaci) _apriRotta(kRottaOggi);
+  }
 
   static const _channelId = 'promemoria_appuntamenti';
   static const _channelName = 'Promemoria visite ed esami';
@@ -34,7 +74,16 @@ class NotificationService {
     const settings = InitializationSettings(
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
     );
-    await _plugin.initialize(settings);
+    await _plugin.initialize(settings,
+        onDidReceiveNotificationResponse: _onRisposta);
+    // App avviata toccando una notifica dei farmaci (app chiusa)
+    try {
+      final avvio = await _plugin.getNotificationAppLaunchDetails();
+      if (avvio?.didNotificationLaunchApp == true &&
+          avvio?.notificationResponse?.payload == kPayloadFarmaci) {
+        rottaPendente = kRottaOggi;
+      }
+    } catch (_) {}
     _ready = true;
   }
 
@@ -57,7 +106,8 @@ class NotificationService {
       h ^= c;
       h = (h * 0x01000193) & 0x7FFFFFFF;
     }
-    return h;
+    // Sotto kIdBaseFarmaci: non collide con le notifiche dei farmaci
+    return h & 0x3FFFFFFF;
   }
 
   Future<void> annulla(String idAppuntamento) async {
@@ -127,7 +177,10 @@ class NotificationService {
   Future<void> rischedulaTutti() async {
     if (!_ready) return;
     try {
-      await _plugin.cancelAll();
+      // Solo le notifiche degli appuntamenti: quelle dei farmaci restano
+      for (final p in await _plugin.pendingNotificationRequests()) {
+        if (p.id < kIdBaseFarmaci) await _plugin.cancel(p.id);
+      }
       final repo = LocalRepository();
       await repo.init();
       for (final a in await repo.getAppuntamenti()) {

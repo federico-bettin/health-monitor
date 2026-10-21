@@ -17,6 +17,8 @@
     <!-- Notifiche promemoria -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!-- Allarmi esatti per i promemoria farmaci (senza: notifiche con qualche minuto di ritardo) -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
 
     <!-- Biometrico -->
