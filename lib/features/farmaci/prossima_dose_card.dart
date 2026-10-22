@@ -4,6 +4,7 @@ import 'package:salute_bettin/core/theme.dart';
 import 'package:salute_bettin/data/models/assunzione_farmaco.dart';
 import 'package:salute_bettin/data/models/farmaco.dart';
 import 'package:salute_bettin/data/repositories/local_repository.dart';
+import 'package:salute_bettin/data/services/farmaci_azioni_notifica.dart';
 import 'package:salute_bettin/features/farmaci/oggi_page.dart';
 import 'package:salute_bettin/features/farmaci/scheduling/occorrenze.dart';
 
@@ -23,7 +24,14 @@ class _ProssimaDoseCardState extends State<ProssimaDoseCard> {
   @override
   void initState() {
     super.initState();
+    FarmaciAzioni.versione.addListener(_carica);
     _carica();
+  }
+
+  @override
+  void dispose() {
+    FarmaciAzioni.versione.removeListener(_carica);
+    super.dispose();
   }
 
   bool _registrata(List<AssunzioneFarmaco> ass, Farmaco f, DateTime t) {

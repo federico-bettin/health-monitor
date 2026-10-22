@@ -35,13 +35,16 @@ class FarmacoAdapter extends TypeAdapter<Farmaco> {
       promemoriaAttivo: fields[15] == null ? false : fields[15] as bool,
       istruzioni: fields[16] as String?,
       archiviato: fields[17] == null ? false : fields[17] as bool,
+      scorte: fields[18] as double?,
+      unitaPerDose: fields[19] as double?,
+      sogliaScorteGiorni: fields[20] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Farmaco obj) {
     writer
-      ..writeByte(18)
+      ..writeByte(21)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -77,7 +80,13 @@ class FarmacoAdapter extends TypeAdapter<Farmaco> {
       ..writeByte(16)
       ..write(obj.istruzioni)
       ..writeByte(17)
-      ..write(obj.archiviato);
+      ..write(obj.archiviato)
+      ..writeByte(18)
+      ..write(obj.scorte)
+      ..writeByte(19)
+      ..write(obj.unitaPerDose)
+      ..writeByte(20)
+      ..write(obj.sogliaScorteGiorni);
   }
 
   @override

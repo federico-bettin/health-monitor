@@ -71,6 +71,21 @@ class Farmaco extends HiveObject {
   @HiveField(17, defaultValue: false)
   bool archiviato;
 
+  // ─── Scorte ───────────────────────────────────────────────
+
+  /// Unità rimaste (compresse, fiale...). Null = scorte non tracciate.
+  /// Scendono a ogni dose segnata come presa.
+  @HiveField(18)
+  double? scorte;
+
+  /// Unità consumate a ogni assunzione. Null = 1.
+  @HiveField(19)
+  double? unitaPerDose;
+
+  /// Avviso quando le scorte bastano per meno di questi giorni. Null = 7.
+  @HiveField(20)
+  int? sogliaScorteGiorni;
+
   Farmaco({
     required this.id,
     required this.nome,
@@ -90,6 +105,9 @@ class Farmaco extends HiveObject {
     this.promemoriaAttivo = false,
     this.istruzioni,
     this.archiviato = false,
+    this.scorte,
+    this.unitaPerDose,
+    this.sogliaScorteGiorni,
   })  : orariAssunzione = orariAssunzione ?? [],
         giorniSettimana = giorniSettimana ?? [],
         updatedAt = updatedAt ?? DateTime.now();
@@ -122,6 +140,9 @@ class Farmaco extends HiveObject {
         'promemoriaAttivo': promemoriaAttivo,
         'istruzioni': istruzioni,
         'archiviato': archiviato,
+        'scorte': scorte,
+        'unitaPerDose': unitaPerDose,
+        'sogliaScorteGiorni': sogliaScorteGiorni,
       };
 
   factory Farmaco.fromJson(Map<String, dynamic> json) => Farmaco(
@@ -152,5 +173,8 @@ class Farmaco extends HiveObject {
         promemoriaAttivo: json['promemoriaAttivo'] as bool? ?? false,
         istruzioni: json['istruzioni'] as String?,
         archiviato: json['archiviato'] as bool? ?? false,
+        scorte: (json['scorte'] as num?)?.toDouble(),
+        unitaPerDose: (json['unitaPerDose'] as num?)?.toDouble(),
+        sogliaScorteGiorni: (json['sogliaScorteGiorni'] as num?)?.toInt(),
       );
 }

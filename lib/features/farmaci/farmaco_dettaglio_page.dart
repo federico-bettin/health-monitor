@@ -4,7 +4,9 @@ import 'package:salute_bettin/core/theme.dart';
 import 'package:salute_bettin/data/models/farmaco.dart';
 import 'package:salute_bettin/data/repositories/local_repository.dart';
 import 'package:salute_bettin/data/repositories/repository_provider.dart';
+import 'aderenza_card.dart';
 import 'farmaco_ciclo_vita.dart';
+import 'scorte_card.dart';
 import 'piano_testi.dart';
 import 'registra_assunzione.dart';
 import 'farmaco_form_page.dart';
@@ -74,6 +76,15 @@ class FarmacoDettaglioPage extends StatelessWidget {
               if ((farmaco.istruzioni ?? '').trim().isNotEmpty)
                 _InfoRow(icon: Icons.info_outline, label: 'Istruzioni', value: farmaco.istruzioni!.trim()),
             ]),
+            if (farmaco.scorte != null) ...[
+              const SizedBox(height: 16),
+              ScorteCard(farmacoId: farmaco.id),
+            ],
+            if (farmaco.promemoriaAttivo &&
+                farmaco.frequenzaTipo != FrequenzaFarmaco.alBisogno) ...[
+              const SizedBox(height: 4),
+              AderenzaCard(farmacoId: farmaco.id),
+            ],
             if (farmaco.frequenzaTipo == FrequenzaFarmaco.alBisogno) ...[
               const SizedBox(height: 16),
               SizedBox(

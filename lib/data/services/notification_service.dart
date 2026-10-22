@@ -4,6 +4,7 @@ import 'package:salute_bettin/core/format.dart';
 import 'package:salute_bettin/core/i18n.dart';
 import 'package:salute_bettin/data/models/appuntamento.dart';
 import 'package:salute_bettin/data/repositories/local_repository.dart';
+import 'package:salute_bettin/data/services/farmaci_azioni_notifica.dart';
 import 'package:salute_bettin/data/services/settings_service.dart';
 import 'package:timezone/data/latest.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
@@ -57,7 +58,18 @@ class NotificationService {
   }
 
   void _onRisposta(NotificationResponse r) {
-    if (r.payload == kPayloadFarmaci) _apriRotta(kRottaOggi);
+    if (!ePayloadFarmaci(r.payload)) return;
+    final azione = r.actionId;
+    if (azione == kAzionePreso || azione == kAzionePosticipa) {
+      // Pulsante toccato con l'app in primo piano
+      gestisciAzioneFarmaci(r, _plugin)
+          .then((_) => FarmaciAzioni.applicaCoda())
+          .catchError((Object e) {
+        debugPrint('Azione notifica farmaci fallita: $e');
+      });
+      return;
+    }
+    _apriRotta(kRottaOggi);
   }
 
   static const _channelId = 'promemoria_appuntamenti';
@@ -75,12 +87,13 @@ class NotificationService {
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
     );
     await _plugin.initialize(settings,
-        onDidReceiveNotificationResponse: _onRisposta);
+        onDidReceiveNotificationResponse: _onRisposta,
+        onDidReceiveBackgroundNotificationResponse: farmaciNotificaInBackground);
     // App avviata toccando una notifica dei farmaci (app chiusa)
     try {
       final avvio = await _plugin.getNotificationAppLaunchDetails();
       if (avvio?.didNotificationLaunchApp == true &&
-          avvio?.notificationResponse?.payload == kPayloadFarmaci) {
+          ePayloadFarmaci(avvio?.notificationResponse?.payload)) {
         rottaPendente = kRottaOggi;
       }
     } catch (_) {}

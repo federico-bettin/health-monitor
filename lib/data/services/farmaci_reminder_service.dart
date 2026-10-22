@@ -6,10 +6,14 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:salute_bettin/core/i18n.dart';
 import 'package:salute_bettin/data/models/farmaco.dart';
 import 'package:salute_bettin/data/repositories/local_repository.dart';
+import 'package:salute_bettin/data/services/farmaci_azioni_notifica.dart';
 import 'package:salute_bettin/data/services/notification_service.dart';
 import 'package:salute_bettin/data/services/settings_service.dart';
 import 'package:salute_bettin/features/farmaci/scheduling/occorrenze.dart';
 import 'package:timezone/timezone.dart' as tz;
+
+/// ID della notifica "promemoria da rinnovare" (sopra i posticipi e le scorte).
+const int kIdRinnovo = 1300000000;
 
 /// Stato dei permessi Android per i promemoria. `null` = non determinabile.
 class PermessiPromemoria {
@@ -21,15 +25,12 @@ class PermessiPromemoria {
 /// Pianifica le notifiche dei promemoria farmaci (solo Android; su Windows e
 /// altre piattaforme non fa nulla).
 ///
-/// Finestra mobile di [kFinestraGiorni] giorni, tetto [kTettoNotifiche],
+/// Finestra mobile fino a [kFinestraMaxGiorni] giorni, tetto [kTettoNotifiche],
 /// ricostruzione completa a ogni modifica. Le notifiche dei farmaci usano ID
 /// da [kIdBaseFarmaci] in su, separati da quelli di visite ed esami.
 class FarmaciReminderService {
   FarmaciReminderService._();
   static final FarmaciReminderService instance = FarmaciReminderService._();
-
-  static const _channelId = 'promemoria_farmaci';
-  static const _channelName = 'Promemoria farmaci';
 
   Timer? _timer;
   Future<void>? _inCorso;
@@ -75,8 +76,13 @@ class FarmaciReminderService {
     final s = SettingsService.instance;
     try {
       final plugin = ns.plugin;
+      await plugin.cancel(kIdRinnovo); // si ripianifica a ogni ricostruzione
+      // I posticipi (ID da kIdBaseSnooze) restano, salvo promemoria spenti
       for (final p in await plugin.pendingNotificationRequests()) {
-        if (p.id >= kIdBaseFarmaci) await plugin.cancel(p.id);
+        if (p.id >= kIdBaseFarmaci &&
+            (!s.farmaciNotifAttive || p.id < kIdBaseSnooze)) {
+          await plugin.cancel(p.id);
+        }
       }
       if (!s.farmaciNotifAttive) {
         await _salvaStato(0, null);
@@ -89,10 +95,17 @@ class FarmaciReminderService {
           .where((f) => f.promemoriaAttivo && !f.archiviato)
           .toList();
 
+      // Si pianifica più avanti possibile (fino a kFinestraMaxGiorni o al tetto):
+      // con pochi promemoria al giorno l'app non va aperta spesso.
       final adesso = DateTime.now();
       final fine =
-          DateTime(adesso.year, adesso.month, adesso.day + kFinestraGiorni);
-      final gruppi = limitaAlTetto(raggruppaPerOrario(farmaci, adesso, fine));
+          DateTime(adesso.year, adesso.month, adesso.day + kFinestraMaxGiorni);
+      final tutti = raggruppaPerOrario(farmaci, adesso, fine);
+      final gruppi = limitaAlTetto(tutti);
+      // Il piano continua oltre quanto pianificato? Allora serve un avviso di rinnovo
+      final dopo = raggruppaPerOrario(
+          farmaci, fine, DateTime(fine.year, fine.month, fine.day + 14));
+      final troncato = tutti.length > gruppi.length || dopo.isNotEmpty;
 
       final esatti = await _android?.canScheduleExactNotifications() ?? false;
       final mostraNome = s.farmaciMostraNome;
@@ -104,23 +117,58 @@ class FarmaciReminderService {
         final quando = aIstante(g.quando, tz.local);
         if (!quando.isAfter(ora)) continue;
         final t = _testi(g, mostraNome);
-        final dettagli = _dettagli(t.espanso);
+        final payload = PayloadFarmaci(
+          previstaMs: g.quando.millisecondsSinceEpoch,
+          farmacoIds: g.farmaci.map((f) => f.id).toList(),
+          titolo: t.titolo,
+          corpo: t.corpo,
+          espanso: t.espanso,
+          lPreso: g.farmaci.length > 1 ? tr('Presi tutti') : tr('Preso'),
+          lPosticipa: tr('Posticipa {0} min', [kPosticipaMinuti]),
+        );
+        final dettagli = dettagliFarmaci(espanso: t.espanso, payload: payload);
         final id = kIdBaseFarmaci + pianificate;
         try {
-          await _schedula(plugin, id, t, quando, dettagli,
+          await _schedula(plugin, id, t, quando, dettagli, payload.codifica(),
               esatti ? AndroidScheduleMode.exactAllowWhileIdle : AndroidScheduleMode.inexactAllowWhileIdle);
         } on PlatformException {
           // Allarmi esatti revocati: ripiego su allarme non esatto
-          await _schedula(plugin, id, t, quando, dettagli,
+          await _schedula(plugin, id, t, quando, dettagli, payload.codifica(),
               AndroidScheduleMode.inexactAllowWhileIdle);
         }
         pianificate++;
         ultima = g.quando;
       }
       await _salvaStato(pianificate, ultima);
+      if (troncato && ultima != null) await _pianificaRinnovo(plugin, ultima);
     } catch (e) {
       debugPrint('Ricostruzione promemoria farmaci fallita: $e');
     }
+  }
+
+  /// Notifica "apri l'app per rinnovare i promemoria", qualche giorno prima
+  /// che quelli pianificati finiscano. Se l'app viene aperta prima, la
+  /// ricostruzione la sposta in avanti e non si vede mai.
+  Future<void> _pianificaRinnovo(
+      FlutterLocalNotificationsPlugin plugin, DateTime ultima) async {
+    tz.TZDateTime alle10(DateTime d) =>
+        tz.TZDateTime(tz.local, d.year, d.month, d.day, 10);
+    final ora = tz.TZDateTime.now(tz.local);
+    var quando = alle10(DateTime(ultima.year, ultima.month, ultima.day - 3));
+    if (!quando.isAfter(ora)) quando = alle10(ultima);
+    if (!quando.isAfter(ora)) return;
+    final data = '${ultima.day.toString().padLeft(2, '0')}/'
+        '${ultima.month.toString().padLeft(2, '0')}/${ultima.year}';
+    await plugin.zonedSchedule(
+      kIdRinnovo,
+      tr('Promemoria da rinnovare'),
+      tr("I promemoria dei farmaci sono pianificati fino al {0}. Apri l'app per rinnovarli.",
+          [data]),
+      quando,
+      dettagliFarmaci(),
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      payload: kPayloadFarmaci,
+    );
   }
 
   Future<void> _schedula(
@@ -129,6 +177,7 @@ class FarmaciReminderService {
     _Testi t,
     tz.TZDateTime quando,
     NotificationDetails dettagli,
+    String payload,
     AndroidScheduleMode modo,
   ) =>
       plugin.zonedSchedule(
@@ -138,7 +187,7 @@ class FarmaciReminderService {
         quando,
         dettagli,
         androidScheduleMode: modo,
-        payload: kPayloadFarmaci,
+        payload: payload,
       );
 
   Future<void> _salvaStato(int n, DateTime? fino) async {
@@ -177,19 +226,6 @@ class FarmaciReminderService {
         g.farmaci.map((f) => f.nome).join(', '), righe);
   }
 
-  NotificationDetails _dettagli(String? espanso) => NotificationDetails(
-        android: AndroidNotificationDetails(
-          _channelId,
-          _channelName,
-          channelDescription: 'Promemoria per l\'assunzione dei farmaci',
-          importance: Importance.high,
-          priority: Priority.high,
-          category: AndroidNotificationCategory.reminder,
-          styleInformation:
-              espanso == null ? null : BigTextStyleInformation(espanso),
-        ),
-      );
-
   // ─── Permessi ─────────────────────────────────────────────
 
   Future<PermessiPromemoria> statoPermessi() async {
@@ -222,7 +258,7 @@ class FarmaciReminderService {
       kIdBaseFarmaci - 1,
       tr('Notifica di test'),
       tr('Se vedi questo messaggio, i promemoria dei farmaci funzionano'),
-      _dettagli(null),
+      dettagliFarmaci(),
       payload: kPayloadFarmaci,
     );
   }

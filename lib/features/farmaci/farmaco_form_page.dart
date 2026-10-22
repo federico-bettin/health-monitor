@@ -6,6 +6,7 @@ import 'package:salute_bettin/data/repositories/local_repository.dart';
 import 'package:salute_bettin/data/services/farmaci_reminder_service.dart';
 import 'package:salute_bettin/features/farmaci/permessi_dialog.dart';
 import 'package:salute_bettin/features/farmaci/piano_testi.dart';
+import 'package:salute_bettin/features/farmaci/scheduling/scorte.dart';
 import 'package:uuid/uuid.dart';
 
 class FarmacoFormPage extends StatefulWidget {
@@ -25,6 +26,9 @@ class _FarmacoFormPageState extends State<FarmacoFormPage> {
   late TextEditingController _noteCtrl;
   late TextEditingController _istruzioniCtrl;
   late TextEditingController _ogniNCtrl;
+  late TextEditingController _scorteCtrl;
+  late TextEditingController _unitaCtrl;
+  late TextEditingController _sogliaCtrl;
   late bool _attivo;
   late bool _promemoria;
   late FrequenzaFarmaco _freq;
@@ -46,6 +50,12 @@ class _FarmacoFormPageState extends State<FarmacoFormPage> {
     _noteCtrl = TextEditingController(text: f?.note ?? '');
     _istruzioniCtrl = TextEditingController(text: f?.istruzioni ?? '');
     _ogniNCtrl = TextEditingController(text: f?.ogniNGiorni?.toString() ?? '');
+    _scorteCtrl = TextEditingController(
+        text: f?.scorte == null ? '' : formattaUnita(f!.scorte!));
+    _unitaCtrl = TextEditingController(
+        text: f?.unitaPerDose == null ? '' : formattaUnita(f!.unitaPerDose!));
+    _sogliaCtrl =
+        TextEditingController(text: f?.sogliaScorteGiorni?.toString() ?? '');
     _attivo = f?.attivo ?? true;
     _promemoria = f?.promemoriaAttivo ?? false;
     _freq = f?.frequenzaTipo ?? FrequenzaFarmaco.giornaliera;
@@ -64,7 +74,16 @@ class _FarmacoFormPageState extends State<FarmacoFormPage> {
     _noteCtrl.dispose();
     _istruzioniCtrl.dispose();
     _ogniNCtrl.dispose();
+    _scorteCtrl.dispose();
+    _unitaCtrl.dispose();
+    _sogliaCtrl.dispose();
     super.dispose();
+  }
+
+  /// Numero decimale (accetta la virgola). Null se vuoto o non valido.
+  double? _numero(TextEditingController c) {
+    final t = c.text.trim().replaceAll(',', '.');
+    return t.isEmpty ? null : double.tryParse(t);
   }
 
   Future<void> _pickData(bool isInizio) async {
@@ -125,6 +144,18 @@ class _FarmacoFormPageState extends State<FarmacoFormPage> {
         return tr('Scegli almeno un giorno della settimana');
       }
     }
+    final scorte = _numero(_scorteCtrl);
+    if (_scorteCtrl.text.trim().isNotEmpty && (scorte == null || scorte < 0)) {
+      return tr('Scorte non valide');
+    }
+    final unita = _numero(_unitaCtrl);
+    if (_unitaCtrl.text.trim().isNotEmpty && (unita == null || unita <= 0)) {
+      return tr('Unità per assunzione non valide');
+    }
+    final soglia = int.tryParse(_sogliaCtrl.text.trim());
+    if (_sogliaCtrl.text.trim().isNotEmpty && (soglia == null || soglia < 0)) {
+      return tr('Giorni di preavviso non validi');
+    }
     return null;
   }
 
@@ -165,6 +196,9 @@ class _FarmacoFormPageState extends State<FarmacoFormPage> {
             ? null
             : _istruzioniCtrl.text.trim(),
         archiviato: widget.farmaco?.archiviato ?? false,
+        scorte: _numero(_scorteCtrl),
+        unitaPerDose: _numero(_unitaCtrl),
+        sogliaScorteGiorni: int.tryParse(_sogliaCtrl.text.trim()),
       );
       // Testo di frequenza sempre in italiano: resta leggibile in backup e Drive
       farmaco.frequenza = etichettaFrequenza(farmaco, localizzato: false);
@@ -378,6 +412,38 @@ class _FarmacoFormPageState extends State<FarmacoFormPage> {
                   ),
                 ]),
               ),
+            const Divider(),
+            // ─── Scorte ──────────────────────────────────────
+            Text('Scorte',
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: AppTheme.primary, letterSpacing: 0.5)),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: _scorteCtrl,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: trDeco(InputDecoration(
+                  labelText: 'Unità rimaste',
+                  hintText: 'es. 30 compresse (vuoto = non tracciare)')),
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _unitaCtrl,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: trDeco(InputDecoration(
+                  labelText: 'Unità per assunzione', hintText: 'es. 1 (vuoto = 1)')),
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _sogliaCtrl,
+              keyboardType: TextInputType.number,
+              decoration: trDeco(InputDecoration(
+                  labelText: 'Avvisami quando bastano per meno di (giorni)',
+                  hintText: 'es. 7 (vuoto = 7)')),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+                'Le scorte scendono a ogni dose segnata come presa.',
+                style: TextStyle(fontSize: 12, color: AppTheme.textSecondaryDark)),
             const Divider(),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,

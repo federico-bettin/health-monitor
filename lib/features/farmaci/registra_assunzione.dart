@@ -3,32 +3,53 @@ import 'package:salute_bettin/core/i18n.dart';
 import 'package:salute_bettin/data/models/assunzione_farmaco.dart';
 import 'package:salute_bettin/data/models/farmaco.dart';
 import 'package:salute_bettin/data/repositories/local_repository.dart';
+import 'package:salute_bettin/data/services/farmaci_azioni_notifica.dart';
+import 'package:salute_bettin/data/services/notification_service.dart';
+import 'package:salute_bettin/data/services/scorte_service.dart';
 import 'package:uuid/uuid.dart';
 
 /// ID stabile per una dose prevista: evita doppioni se si tocca due volte.
 String idAssunzionePrevista(String farmacoId, DateTime prevista) =>
-    '${farmacoId}_${prevista.millisecondsSinceEpoch}';
+    idDosePrevista(farmacoId, prevista);
 
 /// Registra l'esito di una dose prevista (Preso / Salta), origine "app".
 Future<void> registraDosePrevista(
     Farmaco f, DateTime prevista, StatoAssunzione stato) async {
   final repo = LocalRepository();
   await repo.init();
+  final id = idAssunzionePrevista(f.id, prevista);
+  final prima = await repo.getAssunzioni(
+      prevista, prevista.add(const Duration(minutes: 1)));
+  final eraPresa =
+      prima.any((a) => a.id == id && a.stato == StatoAssunzione.presa);
   await repo.saveAssunzione(AssunzioneFarmaco(
-    id: idAssunzionePrevista(f.id, prevista),
+    id: id,
     farmacoId: f.id,
     dataOraPrevista: prevista,
     dataOraRegistrata: DateTime.now(),
     statoIdx: stato.index,
     origineIdx: OrigineAssunzione.app.index,
   ));
+  // Dose già gestita: se c'era un posticipo in attesa, non serve più
+  try {
+    final ns = NotificationService.instance;
+    if (ns.pronto) await ns.plugin.cancel(idSnooze(prevista.millisecondsSinceEpoch));
+  } catch (_) {}
+  // Scorte: scendono solo se la dose diventa "presa" (e non lo era già)
+  final presa = stato == StatoAssunzione.presa;
+  if (presa && !eraPresa) await ScorteService.applica(f.id, 1);
+  if (!presa && eraPresa) await ScorteService.applica(f.id, -1);
 }
 
 /// Annulla la registrazione di una dose (torna "da prendere").
-Future<void> annullaAssunzione(String id) async {
+/// Se era "presa", le scorte tornano su.
+Future<void> annullaAssunzione(AssunzioneFarmaco a) async {
   final repo = LocalRepository();
   await repo.init();
-  await repo.deleteAssunzione(id);
+  await repo.deleteAssunzione(a.id);
+  if (a.stato == StatoAssunzione.presa) {
+    await ScorteService.applica(a.farmacoId, -1);
+  }
 }
 
 /// Dialog "Registra assunzione" per farmaci al bisogno: data e ora attuali,
@@ -108,6 +129,7 @@ Future<bool> registraAssunzioneManuale(BuildContext context, Farmaco f) async {
     statoIdx: StatoAssunzione.presa.index,
     origineIdx: OrigineAssunzione.manuale.index,
   ));
+  await ScorteService.applica(f.id, 1);
   return true;
 }
 

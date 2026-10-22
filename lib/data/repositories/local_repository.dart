@@ -96,10 +96,14 @@ class LocalRepository implements IDataRepository {
   Future<Farmaco?> getFarmaco(String id) async => _farmaciBox?.get(id);
 
   @override
-  Future<void> saveFarmaco(Farmaco farmaco) async {
+  Future<void> saveFarmaco(Farmaco farmaco,
+      {bool ricostruisciPromemoria = true}) async {
     await _farmaciBox?.put(farmaco.id, farmaco);
     DriveSyncService.instance.segnaModifica();
-    FarmaciReminderService.instance.richiediRicostruzione();
+    // Falso solo se cambiano le scorte: il piano delle notifiche non cambia
+    if (ricostruisciPromemoria) {
+      FarmaciReminderService.instance.richiediRicostruzione();
+    }
   }
 
   @override

@@ -5,6 +5,7 @@ import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:salute_bettin/data/repositories/local_repository.dart';
+import 'package:salute_bettin/data/services/drive_errori.dart';
 import 'package:salute_bettin/data/services/settings_service.dart';
 
 // ─── Slot paziente ────────────────────────────────────────────
@@ -239,7 +240,7 @@ class BackupService {
       }
       return const DriveResult(ok: true, messaggio: 'Salvato in Drive/HealthMonitor');
     } catch (e) {
-      return DriveResult(ok: false, messaggio: 'Errore Drive: $e');
+      return DriveResult(ok: false, messaggio: messaggioErroreDrive(e));
     }
   }
 

@@ -4,8 +4,12 @@ import 'package:salute_bettin/core/theme.dart';
 import 'package:salute_bettin/data/models/assunzione_farmaco.dart';
 import 'package:salute_bettin/data/models/farmaco.dart';
 import 'package:salute_bettin/data/repositories/local_repository.dart';
+import 'package:salute_bettin/data/services/farmaci_azioni_notifica.dart';
+import 'package:salute_bettin/data/services/scorte_service.dart';
+import 'package:salute_bettin/features/farmaci/aderenza_card.dart';
 import 'package:salute_bettin/features/farmaci/registra_assunzione.dart';
 import 'package:salute_bettin/features/farmaci/scheduling/occorrenze.dart';
+import 'package:salute_bettin/features/farmaci/scheduling/scorte.dart';
 
 enum _StatoUi { daPrendere, presa, saltata, nonRegistrata }
 
@@ -27,15 +31,26 @@ class OggiPage extends StatefulWidget {
 
 class _OggiPageState extends State<OggiPage> {
   bool _loading = true;
+  int _rev = 0; // fa ricaricare la card dell'aderenza
   String? _errore;
   List<_Dose> _dosi = [];
   List<Farmaco> _alBisogno = [];
   List<AssunzioneFarmaco> _alBisognoOggi = [];
+  List<(Farmaco, StatoScorte)> _avvisiScorte = [];
 
   @override
   void initState() {
     super.initState();
+    FarmaciAzioni.versione.addListener(_carica);
+    // Registra subito i "Preso" toccati sulle notifiche
+    FarmaciAzioni.applicaCoda();
     _carica();
+  }
+
+  @override
+  void dispose() {
+    FarmaciAzioni.versione.removeListener(_carica);
+    super.dispose();
   }
 
   AssunzioneFarmaco? _trova(
@@ -85,8 +100,18 @@ class _OggiPageState extends State<OggiPage> {
               a.dataOraPrevista == null && idAlBisogno.contains(a.farmacoId))
           .toList();
 
+      // Farmaci in uso con scorte in esaurimento
+      final avvisi = <(Farmaco, StatoScorte)>[];
+      for (final f in farmaci) {
+        if (!f.attivo || f.isScaduto) continue;
+        final s = statoScorte(f, adesso);
+        if (s != null && s.inAvviso) avvisi.add((f, s));
+      }
+
       if (!mounted) return;
       setState(() {
+        _rev++;
+        _avvisiScorte = avvisi;
         _dosi = dosi;
         _alBisogno = alBisogno;
         _alBisognoOggi = alBisognoOggi;
@@ -120,7 +145,7 @@ class _OggiPageState extends State<OggiPage> {
   Future<void> _annulla(_Dose d) async {
     final a = d.assunzione;
     if (a == null) return;
-    await annullaAssunzione(a.id);
+    await annullaAssunzione(a);
     await _carica();
   }
 
@@ -153,12 +178,38 @@ class _OggiPageState extends State<OggiPage> {
     );
   }
 
+  Widget _bannerScorte() => Card(
+        margin: const EdgeInsets.only(bottom: 12),
+        color: AppTheme.warning.withOpacity(0.12),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(children: [
+                const Icon(Icons.inventory_2_outlined,
+                    size: 18, color: AppTheme.warning),
+                const SizedBox(width: 8),
+                const Text('Scorte in esaurimento',
+                    style: TextStyle(fontWeight: FontWeight.w700)),
+              ]),
+              for (final (f, s) in _avvisiScorte)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text(testoAvvisoScorte(f, s)),
+                ),
+            ],
+          ),
+        ),
+      );
+
   Widget _contenuto() {
     if (_dosi.isEmpty && _alBisogno.isEmpty) {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(32),
         children: [
+          if (_avvisiScorte.isNotEmpty) _bannerScorte(),
           const SizedBox(height: 48),
           Icon(Icons.check_circle_outline,
               size: 72, color: Colors.grey.withOpacity(0.4)),
@@ -180,10 +231,12 @@ class _OggiPageState extends State<OggiPage> {
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(16),
       children: [
+        if (_avvisiScorte.isNotEmpty) _bannerScorte(),
         if (_dosi.isNotEmpty) ...[
           Text(tr('Dosi di oggi: {0} su {1} prese', [prese, _dosi.length]),
               style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 12),
+          AderenzaCard(rev: _rev),
           for (final d in _dosi) _cardDose(d),
         ],
         if (_alBisogno.isNotEmpty) ...[

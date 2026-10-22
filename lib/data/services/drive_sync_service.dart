@@ -9,6 +9,7 @@ import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:salute_bettin/data/services/backup_service.dart';
+import 'package:salute_bettin/data/services/drive_errori.dart';
 import 'package:salute_bettin/data/services/settings_service.dart';
 
 class DriveSyncResult {
@@ -128,7 +129,7 @@ class DriveSyncService {
               : 'Sincronizzato');
     } catch (e) {
       // Resta "in attesa": riproverà da solo
-      return DriveSyncResult(false, 'Sync non riuscito (riproverò): $e');
+      return DriveSyncResult(false, messaggioErroreDrive(e));
     } finally {
       _inCorso = false;
     }

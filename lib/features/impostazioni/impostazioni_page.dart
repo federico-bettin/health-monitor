@@ -701,29 +701,97 @@ class _ImpostazioniPageState extends ConsumerState<ImpostazioniPage> {
     );
   }
 
+  /// Cancellazione di tutti i dati, con tre protezioni:
+  /// 1. bisogna scrivere la parola di conferma;
+  /// 2. con il blocco biometrico attivo, serve l'impronta/PIN;
+  /// 3. prima si salva un backup in Download; se il backup fallisce,
+  ///    non si cancella nulla.
   Future<void> _confirmReset(BuildContext context) async {
+    final parola = tr('CANCELLA');
+    final ctrl = TextEditingController();
     final ok = await showDialog<bool>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-              title: const Text('Cancella tutti i dati'),
-              content: const Text('Sei sicuro? Non può essere annullato.'),
-              actions: [
-                TextButton(
-                    onPressed: () => Navigator.pop(ctx, false),
-                    child: const Text('Annulla')),
-                TextButton(
-                    onPressed: () => Navigator.pop(ctx, true),
-                    child: const Text('Cancella',
-                        style: TextStyle(color: AppTheme.error))),
-              ],
-            ));
-    if (ok == true) {
+      context: context,
+      builder: (ctx) => StatefulBuilder(builder: (ctx, setS) {
+        final valido = ctrl.text.trim().toUpperCase() == parola.toUpperCase();
+        return AlertDialog(
+          title: const Text('Cancella tutti i dati'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                  "Verranno cancellati tutti i dati dell'app su questo telefono. "
+                  'Prima viene salvato un backup automatico nella cartella Download.'),
+              const SizedBox(height: 14),
+              Text(tr('Per confermare scrivi {0}', [parola])),
+              TextField(
+                controller: ctrl,
+                autofocus: true,
+                textCapitalization: TextCapitalization.characters,
+                onChanged: (_) => setS(() {}),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('Annulla')),
+            TextButton(
+                onPressed: valido ? () => Navigator.pop(ctx, true) : null,
+                child: Text('Cancella',
+                    style: TextStyle(
+                        color: valido ? AppTheme.error : Colors.grey))),
+          ],
+        );
+      }),
+    );
+    // Il controller non si dispone qui: il dialogo sta ancora chiudendosi
+    if (ok != true || !mounted) return;
+
+    // Impronta o PIN, se il blocco è attivo
+    if (SettingsService.instance.biometricEnabled) {
+      final autenticato = await AuthService()
+          .authenticate(reason: 'Conferma per cancellare tutti i dati');
+      if (!autenticato) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Autenticazione non riuscita.')));
+        }
+        return;
+      }
+    }
+    if (!mounted) return;
+
+    setState(() => _backupInCorso = true);
+    try {
+      // Backup di sicurezza di tutti i pazienti, prima di toccare qualsiasi cosa
+      String? percorso;
+      try {
+        final data = await BackupService.instance.creaBackupCompleto();
+        percorso = await BackupService.instance.salvaLocale(data);
+      } catch (_) {}
+      if (percorso == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: AppTheme.error,
+              duration: const Duration(seconds: 6),
+              content: Text(
+                  'Backup non riuscito: i dati non sono stati cancellati.')));
+        }
+        return;
+      }
+
       final repo = await ref.read(repositoryProvider.future);
       await repo.clear();
       await SettingsService.instance.clearAllScoreCache();
       ref.invalidate(repositoryProvider);
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Dati cancellati.')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            duration: const Duration(seconds: 10),
+            content: Text(tr('Dati cancellati. Backup salvato in:\n{0}', [percorso]))));
+      }
+    } finally {
+      if (mounted) setState(() => _backupInCorso = false);
     }
   }
 }

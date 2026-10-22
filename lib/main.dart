@@ -14,8 +14,10 @@ import 'package:salute_bettin/data/models/paziente.dart';
 import 'package:salute_bettin/data/models/token_usage.dart';
 import 'package:salute_bettin/data/models/visita.dart';
 import 'package:salute_bettin/data/services/drive_sync_service.dart';
+import 'package:salute_bettin/data/services/farmaci_azioni_notifica.dart';
 import 'package:salute_bettin/data/services/farmaci_reminder_service.dart';
 import 'package:salute_bettin/data/services/notification_service.dart';
+import 'package:salute_bettin/data/services/scorte_service.dart';
 import 'package:salute_bettin/data/services/settings_service.dart';
 
 final linguaProvider = StateProvider<String>((ref) {
@@ -56,6 +58,10 @@ void main() async {
     NotificationService.instance.navigatore = (rotta) => appRouter.push(rotta);
     await NotificationService.instance.rischedulaTutti();
     await FarmaciReminderService.instance.ricostruisci();
+    // "Preso" toccati sulle notifiche mentre l'app era chiusa: aggiornano anche le scorte
+    FarmaciAzioni.perOgniDosePresa = (id) => ScorteService.applica(id, 1);
+    await FarmaciAzioni.applicaCoda();
+    WidgetsBinding.instance.addObserver(OsservatoreCodaFarmaci());
   } catch (_) {}
 
   // Sync automatico con Drive (non blocca l'avvio)

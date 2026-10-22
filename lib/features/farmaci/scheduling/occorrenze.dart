@@ -1,8 +1,13 @@
 import 'package:salute_bettin/data/models/farmaco.dart';
 import 'package:timezone/timezone.dart' as tz;
 
-/// Finestra mobile di pianificazione (giorni di occorrenze esplicite).
+/// Finestra minima di pianificazione (giorni di occorrenze esplicite).
 const int kFinestraGiorni = 30;
+
+/// Finestra massima: si pianifica fin dove arriva, fino a questo limite o al
+/// tetto di notifiche. Con pochi promemoria al giorno copre mesi, quindi
+/// l'app non deve essere aperta spesso perché continuino ad arrivare.
+const int kFinestraMaxGiorni = 120;
 
 /// Tetto di sicurezza di notifiche pianificate (Android/Samsung ~500 allarmi).
 const int kTettoNotifiche = 400;
